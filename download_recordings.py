@@ -1,0 +1,150 @@
+import os
+import requests
+import time
+import csv
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
+from collections import defaultdict
+
+MAX_SPECIES_PER_FAMILY = 10
+MAX_RECORDINGS_PER_SPECIES = 10
+MAX_CONCURRENT_DOWNLOADS = 4
+SLEEP_BETWEEN_DOWNLOADS = 0.8
+
+ONLY_QUALITY_A = True
+MAX_LENGTH_SECONDS = "10-30"
+
+print_lock = Lock()
+
+
+def download_single(rec: dict, species_path: str, family: str):
+    try:
+        species_name = f"{rec['gen']}_{rec['sp']}"
+        file_id = rec["id"]
+
+        file_url = rec.get("file")
+        if file_url and file_url.startswith("//"):
+            file_url = "https:" + file_url
+        elif not file_url or not file_url.startswith("http"):
+            return None
+
+        target_path = os.path.join(species_path, f"{file_id}.mp3")
+
+        audio_resp = requests.get(file_url, timeout=45)
+
+        if audio_resp.status_code == 200:
+            with open(target_path, "wb") as f:
+                f.write(audio_resp.content)
+
+            metadata_entry = {
+                "family": family,
+                "genus": rec["gen"],
+                "species": rec["sp"],
+                "latin_name": f"{rec['gen']}_{rec['sp']}",
+                "common_name": rec.get("en", "Unknown"),
+                "xc_id": file_id,
+                "local_file_path": f"{family}/{species_name}/{file_id}.mp3",
+                "quality": rec.get("q", ""),
+                "duration": rec.get("length", ""),
+            }
+
+            return metadata_entry
+        else:
+            return None
+
+    except Exception:
+        return None
+
+
+def download_test():
+    families = ["paridae", "fringillidae", "phylloscopidae"]
+    data_dir = "bird_data"
+
+    # TODO: your API key
+    api_key = "your_key"
+
+    if not api_key:
+        return
+
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+
+    all_metadata = []
+
+    for fam in families:
+        query = f"fam:{fam}+type:song+grp:birds+len:{MAX_LENGTH_SECONDS}"
+        if ONLY_QUALITY_A:
+            query += "+q:A"
+
+        query_url = f"https://xeno-canto.org/api/3/recordings?query={query}&per_page=200&key={api_key}"
+
+        try:
+            resp = requests.get(query_url, timeout=20)
+            if resp.status_code != 200:
+                continue
+
+            data = resp.json()
+            recordings = data.get("recordings", [])
+
+            species_recordings = defaultdict(list)
+            for rec in recordings:
+                species_name = f"{rec['gen']}_{rec['sp']}"
+                species_recordings[species_name].append(rec)
+
+            sorted_species = sorted(
+                species_recordings.items(),
+                key=lambda x: len(x[1]),
+                reverse=True,
+            )
+
+            selected_species = sorted_species[:MAX_SPECIES_PER_FAMILY]
+
+            download_tasks = []
+            for species_name, rec_list in selected_species:
+                to_download = rec_list[:MAX_RECORDINGS_PER_SPECIES]
+
+                species_path = os.path.join(data_dir, fam, species_name)
+                os.makedirs(species_path, exist_ok=True)
+
+                for rec in to_download:
+                    download_tasks.append((rec, species_path, fam))
+
+            success_count = 0
+            with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_DOWNLOADS) as executor:
+                future_to_task = {
+                    executor.submit(download_single, rec, path, fam): rec
+                    for rec, path, fam in download_tasks
+                }
+
+                for future in as_completed(future_to_task):
+                    meta = future.result()
+                    if meta:
+                        all_metadata.append(meta)
+                        success_count += 1
+                    time.sleep(SLEEP_BETWEEN_DOWNLOADS / 2)
+
+        except Exception:
+            continue
+
+    if all_metadata:
+        csv_path = os.path.join(data_dir, "bird_metadata.csv")
+        fieldnames = [
+            "family",
+            "genus",
+            "species",
+            "latin_name",
+            "common_name",
+            "xc_id",
+            "local_file_path",
+            "quality",
+            "duration",
+        ]
+
+        with open(csv_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(all_metadata)
+
+
+if __name__ == "__main__":
+    download_test()

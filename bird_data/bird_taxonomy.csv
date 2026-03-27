@@ -1,0 +1,29 @@
+family,genus,species,latin_name,common_name
+paridae,Periparus,ater,Periparus_ater,Coal Tit
+paridae,Poecile,atricapillus,Poecile_atricapillus,Black-capped Chickadee
+paridae,Baeolophus,bicolor,Baeolophus_bicolor,Tufted Titmouse
+paridae,Poecile,carolinensis,Poecile_carolinensis,Carolina Chickadee
+paridae,Lophophanes,cristatus,Lophophanes_cristatus,European Crested Tit
+paridae,Poecile,gambeli,Poecile_gambeli,Mountain Chickadee
+paridae,Baeolophus,ridgwayi,Baeolophus_ridgwayi,Juniper Titmouse
+paridae,Pardaliparus,venustulus,Pardaliparus_venustulus,Yellow-bellied Tit
+paridae,Baeolophus,wollweberi,Baeolophus_wollweberi,Bridled Titmouse
+paridae,Baeolophus,inornatus,Baeolophus_inornatus,Oak Titmouse
+fringillidae,Fringilla,coelebs,Fringilla_coelebs,Common Chaffinch
+fringillidae,Carpodacus,erythrinus,Carpodacus_erythrinus,Common Rosefinch
+fringillidae,Fringilla,montifringilla,Fringilla_montifringilla,Brambling
+fringillidae,Pinicola,enucleator,Pinicola_enucleator,Pine Grosbeak
+fringillidae,Pyrrhula,pyrrhula,Pyrrhula_pyrrhula,Eurasian Bullfinch
+fringillidae,Coccothraustes,coccothraustes,Coccothraustes_coccothraustes,Hawfinch
+fringillidae,Hesperiphona,vespertina,Hesperiphona_vespertina,Evening Grosbeak
+fringillidae,Rhodopechys,sanguineus,Rhodopechys_sanguineus,Asian Crimson-winged Finch
+phylloscopidae,Phylloscopus,trochilus,Phylloscopus_trochilus,Willow Warbler
+phylloscopidae,Phylloscopus,bonelli,Phylloscopus_bonelli,Western Bonelli's Warbler
+phylloscopidae,Phylloscopus,sibilatrix,Phylloscopus_sibilatrix,Wood Warbler
+phylloscopidae,Phylloscopus,collybita,Phylloscopus_collybita,Common Chiffchaff
+phylloscopidae,Phylloscopus,humei,Phylloscopus_humei,Hume's Leaf Warbler
+phylloscopidae,Phylloscopus,proregulus,Phylloscopus_proregulus,Pallas's Leaf Warbler
+phylloscopidae,Phylloscopus,pulcher,Phylloscopus_pulcher,Buff-barred Warbler
+phylloscopidae,Phylloscopus,inornatus,Phylloscopus_inornatus,Yellow-browed Warbler
+phylloscopidae,Phylloscopus,yunnanensis,Phylloscopus_yunnanensis,Chinese Leaf Warbler
+phylloscopidae,Phylloscopus,armandii,Phylloscopus_armandii,Yellow-streaked Warbler

@@ -4,13 +4,18 @@ CSC111 Project 2: Main Module
 Entry point for the full pipeline:
 1. Read bird_metadata.csv and extract unique species information
 2. Build a taxonomy tree
-3. Extract vocalization features for each species using RecordingData
+3. Load pre-computed vocalization features (from species_features.csv)
 4. Compute pairwise taxonomy distance and vocalization similarity
 5. Visualize results
+
+Note: Feature extraction is slow, so it is done separately in
+precompute_features.py. Run that first if species_features.csv
+does not exist yet.
 
 Copyright (c) 2026 Lucy Wang, Yiming Xu, Ted Song. All rights reserved.
 """
 import csv
+import os
 
 from classes import TaxonomyTree, Species, RecordingData
 from sound_analysis import (
@@ -26,6 +31,7 @@ from visualization import draw_scatter_static, draw_scatter_interactive
 ###############################################################################
 API_DATA_FILE = 'bird_data/bird_metadata.csv'
 TAXONOMY_INFORMATION = 'bird_data/bird_taxonomy.csv'
+FEATURES_FILE = 'bird_data/species_features.csv'
 
 
 ###############################################################################
@@ -95,62 +101,32 @@ def build_taxonomy_tree(species_information: list[dict[str, str]]) -> TaxonomyTr
         taxonomy_tree.add_species(
             row['family'], row['genus'],
             row['latin_name'], row['common_name'],
-            RecordingData([])  # placeholder; features are extracted separately
+            RecordingData([])  # placeholder; features are loaded from CSV
         )
 
     return taxonomy_tree
 
 
 ###############################################################################
-# Step 3: Extract features and build feature vector dictionary
+# Step 3: Load pre-computed features
 ###############################################################################
-def collect_recording_paths(metadata_file: str) -> dict[str, list[str]]:
-    """Collect all recording file paths for each species from the metadata CSV.
-
-    Returns a dict: latin_name -> [list of recording file paths]
-
-    Preconditions:
-        - metadata_file is a valid CSV file path
-    """
-    species_paths: dict[str, list[str]] = {}
-
-    with open(metadata_file, 'r') as file:
-        reader = csv.reader(file, delimiter=',')
-        next(reader)  # skip header
-        for row in reader:
-            latin_name = row[3]
-            path = 'bird_data/' + row[6]
-            if latin_name not in species_paths:
-                species_paths[latin_name] = []
-            species_paths[latin_name].append(path)
-
-    return species_paths
-
-
-def extract_all_species_features(
-    species_paths: dict[str, list[str]]
-) -> dict[str, list[float]]:
-    """Create a RecordingData for each species, extract features, and convert to feature vectors.
+def load_precomputed_features(features_file: str) -> dict[str, list[float]]:
+    """Load pre-computed feature vectors from a CSV file.
 
     Returns a dict: latin_name -> feature vector (list[float])
 
     Preconditions:
-        - species_paths is non-empty
-        - each latin_name maps to a non-empty list of paths
+        - features_file is a valid CSV file path produced by precompute_features.py
     """
     species_vectors: dict[str, list[float]] = {}
 
-    for latin_name, paths in species_paths.items():
-        print(f'  Extracting features for {latin_name} ({len(paths)} recordings)...')
-        recording = RecordingData(paths)
-
-        # RecordingData.__init__ automatically calls average_features()
-        # recording.features is a dict, e.g. {'mfcc': [...], 'pitch_mean': ..., ...}
-        if recording.features and recording.features != {}:
-            vector = features_to_vector(recording.features)
+    with open(features_file, 'r') as f:
+        reader = csv.reader(f)
+        next(reader)  # skip header
+        for row in reader:
+            latin_name = row[0]
+            vector = [float(x) for x in row[1:]]
             species_vectors[latin_name] = vector
-        else:
-            print(f'    Warning: {latin_name} has no valid features, skipping.')
 
     return species_vectors
 
@@ -206,7 +182,7 @@ def build_comparison_data(
 ###############################################################################
 def run_project() -> None:
     """Run the full project pipeline:
-    1. Read metadata -> 2. Build tree -> 3. Extract features -> 4. Pairwise comparison -> 5. Visualize
+    1. Read metadata -> 2. Build tree -> 3. Load features -> 4. Pairwise comparison -> 5. Visualize
     """
     # Step 1: Read metadata
     print('Step 1: Reading bird metadata...')
@@ -219,11 +195,15 @@ def run_project() -> None:
     taxonomy_tree = build_taxonomy_tree(species_information)
     print('  Taxonomy tree built successfully.')
 
-    # Step 3: Extract vocalization features
-    print('Step 3: Extracting vocalization features (may take a few minutes)...')
-    species_paths = collect_recording_paths(API_DATA_FILE)
-    species_vectors = extract_all_species_features(species_paths)
-    print(f'  Successfully extracted features for {len(species_vectors)} species.')
+    # Step 3: Load pre-computed features
+    if not os.path.exists(FEATURES_FILE):
+        print(f'\nError: {FEATURES_FILE} not found.')
+        print('Please run precompute_features.py first to extract audio features.')
+        return
+
+    print('Step 3: Loading pre-computed features...')
+    species_vectors = load_precomputed_features(FEATURES_FILE)
+    print(f'  Loaded features for {len(species_vectors)} species.')
 
     # Step 4: Compute pairwise comparisons
     print('Step 4: Computing pairwise distance and similarity...')

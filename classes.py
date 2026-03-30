@@ -205,30 +205,6 @@ class TaxonomyTree:
             s2_tracer = s2_tracer._parent
         return len(s1_heritage)
 
-    # def get_distance_to(self, other: TaxonomyTree) -> int:
-    #     """
-    #     Calculate the taxonomical distance between self and other.
-    #
-    #     Preconditions:
-    #     - self._species is not None and other._species is not None
-    #
-    #     >>> Parus_major.get_distance_to(Parus_minor)
-    #     1
-    #     """
-    #     self_heritage = []
-    #     self_tracer = self
-    #     while self_tracer._parent is not None:
-    #         self_heritage.append(self_tracer._root)
-    #         self_tracer = self_tracer._parent
-    #     distance = 0
-    #     other_tracer = other
-    #     for i in range(len(self_heritage)):
-    #         if other_tracer._root == self_heritage[i]:
-    #             return distance
-    #         distance += 1
-    #         other_tracer = other_tracer._parent
-    #     return len(self_heritage)
-
 
 class Species:
 
@@ -296,22 +272,6 @@ class RecordingData:
                 all_features.append(feat)
         self.features = self._average_features(all_features)
 
-    # def _average_features(self, features_list: list[dict[str, Any]]) -> dict[str, Any]:
-    #     """Calculate the average of """
-    #     if not features_list:
-    #         return {}
-    #     avg_features = {}
-    #     keys = features_list[0].keys()
-    #     for key in keys:
-    #         values = []
-    #         for f in features_list:
-    #             if key in f:
-    #                 values.append(f[key])
-    #         if values != []:
-    #             avg_features[key] = mean(values)
-    #
-    #     return avg_features
-
     def _average_features(self, features_list: list[dict[str, Any]]) -> dict[str, Any]:
         """Calculate the average of all features. Special handling for 'mfcc' which is a list."""
         if not features_list:
@@ -332,70 +292,20 @@ class RecordingData:
                 values = [f[key] for f in features_list if key in f]
                 if values:
                     avg_features[key] = mean(values)
-
         return avg_features
 
-    # def _extract_feature(self, file_path: str) -> Optional[dict[str, Any]]:
-    #     """处理单条音频，增加预处理"""
-    #     print(f"calculating{file_path}")
-    #     # try:
-    #     y, sr = librosa.load(file_path, sr=None)
-    #
-    #     # 1. 去除静音（非常重要！）
-    #     y, _ = librosa.effects.trim(y, top_db=20)
-    #
-    #     # 2. 如果修剪后音频太短，跳过
-    #     if len(y) < sr * 0.5:
-    #         return None
-    #
-    #     # 3. 音量归一化（让不同录音的响度接近）
-    #     y = librosa.util.normalize(y)
-    #
-    #     # 4. 提取特征
-    #     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
-    #
-    #     f0, voiced_flag, _ = librosa.pyin(y,
-    #                                       fmin=float(librosa.note_to_hz('C2')),
-    #                                       fmax=float(librosa.note_to_hz('C7')),
-    #                                       sr=sr)
-    #     voiced_f0 = [float(f) for f, v in zip(f0, voiced_flag) if v and not math.isnan(f)]
-    #
-    #     cent = librosa.feature.spectral_centroid(y=y, sr=sr)
-    #     bw = librosa.feature.spectral_bandwidth(y=y, sr=sr)
-    #     rms = librosa.feature.rms(y=y)
-    #
-    #     return {
-    #         'mfcc': [float(mean(mfcc[i])) for i in range(8)],
-    #         'pitch_mean': mean(voiced_f0) if voiced_f0 else 0.0,
-    #         'centroid_mean': float(mean(cent[0])),
-    #         'bandwidth_mean': float(mean(bw[0])),
-    #         'rms_mean': float(mean(rms[0]))
-    #     }
-    #
-    #     # except Exception as e:
-    #     #     print(f"提取特征失败 {file_path}: {e}")
-    #     #     return None
-
     def _extract_feature(self, file_path: str) -> Optional[dict[str, Any]]:
-        """处理单条音频，增加强预处理"""
+        """Calculate features for a single recording. """
         print(f"calculating{file_path}")
-        # try:
         y, sr = librosa.load(file_path, sr=None)
 
-        # 1. 强力去除静音
-        y, _ = librosa.effects.trim(y, top_db=30)  # 从20改成30，更激进
+        y, _ = librosa.effects.trim(y, top_db=30)
 
-        # 2. 如果音频还是太短，跳过
-        if len(y) < sr * 0.8:  # 从0.5秒提高到0.8秒
+        if len(y) < sr * 0.8:
             return None
 
-        # 3. 高通滤波（去除低频噪声，非常重要！）
         y = librosa.effects.preemphasis(y, coef=0.97)
-
-        # 4. 音量归一化
         y = librosa.util.normalize(y)
-
-        # 5. 提取特征
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13, fmin=100)  # 加上 fmin=100
 
         f0, voiced_flag, _ = librosa.pyin(y,
@@ -417,36 +327,6 @@ class RecordingData:
             'rms_mean': float(mean(rms[0]))
         }
 
-        # except Exception as e:
-        #     print(f"提取特征失败 {file_path}: {e}")
-        #     return None
-
-
-    # def _extract_feature(self, file_path: str) -> Optional[dict[str, Any]]:
-    #     """Private method to analyse the features of a single recording file."""
-    #     print(f"calculating{file_path}")
-    #     y, sr = librosa.load(file_path, sr=None)
-    #
-    #     if len(y) < sr * 0.5:
-    #         return None
-    #
-    #     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
-    #     f0, voiced_flag, _ = librosa.pyin(y,
-    #                                       fmin=float(librosa.note_to_hz('C2')),
-    #                                       fmax=float(librosa.note_to_hz('C7')),
-    #                                       sr=sr)
-    #     voiced_f0 = [float(f) for f, v in zip(f0, voiced_flag) if v and not math.isnan(f)]
-    #     cent = librosa.feature.spectral_centroid(y=y, sr=sr)
-    #     bw = librosa.feature.spectral_bandwidth(y=y, sr=sr)
-    #     rms = librosa.feature.rms(y=y)
-    #     return {
-    #         'mfcc': [float(mean(mfcc[i])) for i in range(8)],
-    #         'pitch_mean': mean(voiced_f0) if voiced_f0 else 0.0,
-    #         'centroid_mean': float(mean(cent[0])),
-    #         'bandwidth_mean': float(mean(bw[0])),
-    #         'rms_mean': float(mean(rms[0]))
-    #     }
-
     def get_feature_vector(self) -> list[float]:
         """Return the one-dimensional array of the features of the data, which is later used for calculating distance.
         """
@@ -459,46 +339,32 @@ class RecordingData:
         return vector
 
 
-
-
-#     def __init__(self, recording_file: str) -> None:
-#         """Initialize a set of analyzed data from the list of recording files."""
-#         self.recording_file = recording_file
-#         # self.extract_data()
-#         # data = self.extract_data()
-#     #     self.某data = data.[某data]
-#
-#     def extract_data(self) -> None:
-#         """Analyse the recording file and compute the mean data for the species."""
-# #         TODO: complete the function
-
-
 # variables for testing
-# Parus_major = TaxonomyTree(
-#     rank='Species',
-#     root='Parus_major',
-#     subtrees=None,
-#     parent=None,
-#     species=Species('Parus_major', 'Great_Tit', RecordingData(['']))
-# )
-# Parus_minor = TaxonomyTree(
-#     rank='Species',
-#     root='Parus_minor',
-#     subtrees=None,
-#     parent=None,
-#     species=Species('Parus_minor', 'Japanese_tit', RecordingData(['']))
-# )
-# tree = TaxonomyTree(
-#     rank='Class',
-#     root='Aves',
-#     subtrees=[TaxonomyTree(
-#         rank='Order',
-#         root='Passeriformes',
-#         subtrees=[TaxonomyTree(
-#             rank='Family',
-#             root='Paridae',
-#             subtrees=[TaxonomyTree(
-#                 rank='Genus',
-#                 root='Parus',
-#                 subtrees=[Parus_major, Parus_minor])])])]
-# )
+Parus_major = TaxonomyTree(
+    rank='Species',
+    root='Parus_major',
+    subtrees=None,
+    parent=None,
+    species=Species('Parus_major', 'Great_Tit', RecordingData(['']))
+)
+Parus_minor = TaxonomyTree(
+    rank='Species',
+    root='Parus_minor',
+    subtrees=None,
+    parent=None,
+    species=Species('Parus_minor', 'Japanese_tit', RecordingData(['']))
+)
+tree = TaxonomyTree(
+    rank='Class',
+    root='Aves',
+    subtrees=[TaxonomyTree(
+        rank='Order',
+        root='Passeriformes',
+        subtrees=[TaxonomyTree(
+            rank='Family',
+            root='Paridae',
+            subtrees=[TaxonomyTree(
+                rank='Genus',
+                root='Parus',
+                subtrees=[Parus_major, Parus_minor])])])]
+)

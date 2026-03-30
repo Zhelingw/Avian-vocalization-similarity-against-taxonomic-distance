@@ -1,14 +1,14 @@
 """
 CSC111 Project 2: Sound Analysis Module
 
-这个模块负责声音特征的相似度计算，包括：
-- 将 RecordingData 的特征字典转为特征向量
-- Z-score 归一化（防止某些特征因数值范围大而主导计算）
-- Cosine similarity 计算
-- 所有物种两两之间的相似度比较
+This module handles vocalization similarity computation, including:
+- Converting RecordingData feature dicts into feature vectors
+- Z-score normalization (to prevent features with large ranges from dominating)
+- Cosine similarity computation
+- Pairwise similarity comparison across all species
 
-特征提取部分由 classes.py 中的 RecordingData 完成，
-本模块只处理提取后的数据。
+Feature extraction is handled by RecordingData in classes.py;
+this module only processes the extracted data.
 
 Copyright (c) 2026 Lucy Wang, Yiming Xu, Ted Song. All rights reserved.
 """
@@ -17,12 +17,12 @@ import math
 
 
 ###############################################################################
-# 特征向量转换
+# Feature vector conversion
 ###############################################################################
 def features_to_vector(features: dict) -> list[float]:
-    """将 RecordingData.features 字典转换为有序的特征向量，用于计算相似度。
+    """Convert a RecordingData.features dict into an ordered feature vector for similarity computation.
 
-    向量顺序为: mfcc[0..n] + pitch_mean + centroid_mean + bandwidth_mean + rms_mean
+    Vector order: mfcc[0..n] + pitch_mean + centroid_mean + bandwidth_mean + rms_mean
 
     Preconditions:
         - features != {}
@@ -38,13 +38,13 @@ def features_to_vector(features: dict) -> list[float]:
 
 
 ###############################################################################
-# 相似度计算
+# Similarity computation
 ###############################################################################
 def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
-    """计算两个特征向量之间的余弦相似度。
+    """Compute the cosine similarity between two feature vectors.
 
-    余弦相似度衡量两个向量之间的夹角，返回值在 -1 到 1 之间。
-    值越接近 1 表示两个向量越相似。
+    Cosine similarity measures the angle between two vectors, returning a value
+    between -1 and 1. Values closer to 1 indicate greater similarity.
 
     Preconditions:
         - len(vec_a) == len(vec_b)
@@ -61,9 +61,9 @@ def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
 
 
 def euclidean_distance(vec_a: list[float], vec_b: list[float]) -> float:
-    """计算两个特征向量之间的欧几里得距离。
+    """Compute the Euclidean distance between two feature vectors.
 
-    距离越小说明两个物种的叫声越相似。
+    Smaller distances indicate more similar vocalizations.
 
     Preconditions:
         - len(vec_a) == len(vec_b)
@@ -73,25 +73,25 @@ def euclidean_distance(vec_a: list[float], vec_b: list[float]) -> float:
 
 
 ###############################################################################
-# Z-score 归一化
+# Z-score normalization
 ###############################################################################
 def normalize_features(species_vectors: dict[str, list[float]]) -> dict[str, list[float]]:
-    """对所有物种的特征向量进行 Z-score 归一化。
+    """Perform Z-score normalization on all species feature vectors.
 
-    每个特征维度都会被标准化为均值为 0、标准差为 1。
-    这样可以防止数值范围大的特征（如 pitch，单位是 Hz）
-    压过数值范围小的特征（如 MFCC 系数）。
+    Each feature dimension is standardized to have mean 0 and standard deviation 1.
+    This prevents features with large numeric ranges (e.g. pitch in Hz)
+    from overwhelming features with small ranges (e.g. MFCC coefficients).
 
     Preconditions:
         - len(species_vectors) > 0
-        - 所有向量长度一致
+        - all vectors have the same length
     """
     species_list = list(species_vectors.keys())
     vectors = [species_vectors[s] for s in species_list]
     num_features = len(vectors[0])
     num_species = len(vectors)
 
-    # 计算每个特征维度的均值和标准差
+    # Compute mean and standard deviation for each feature dimension
     means = []
     stds = []
     for i in range(num_features):
@@ -102,7 +102,7 @@ def normalize_features(species_vectors: dict[str, list[float]]) -> dict[str, lis
         means.append(mean_val)
         stds.append(std_val)
 
-    # 归一化
+    # Normalize
     normalized = {}
     for s in species_list:
         vec = species_vectors[s]
@@ -112,16 +112,16 @@ def normalize_features(species_vectors: dict[str, list[float]]) -> dict[str, lis
 
 
 ###############################################################################
-# 两两相似度计算
+# Pairwise similarity computation
 ###############################################################################
 def compute_all_pairwise_similarities(
     species_vectors: dict[str, list[float]]
 ) -> list[tuple[str, str, float]]:
-    """计算所有物种两两之间的余弦相似度。
+    """Compute cosine similarity between all pairs of species.
 
-    先进行 Z-score 归一化，再计算 cosine similarity。
-    返回一个列表，每个元素是 (species1, species2, similarity)，
-    按相似度从高到低排序。
+    Performs Z-score normalization first, then computes cosine similarity.
+    Returns a list of (species1, species2, similarity) tuples,
+    sorted by similarity in descending order.
 
     Preconditions:
         - len(species_vectors) >= 2

@@ -150,8 +150,8 @@ class TaxonomyTree:
         order_node = self._get_or_create_child('order', 'Passeriformes')
         family_node = order_node._get_or_create_child('family', family)
         genus_node = family_node._get_or_create_child('genus', genus)
-        species = Species(name_latin=latin_name, name_common=common_name, recording_data=recording_datas)
-        leaf = TaxonomyTree(rank='species', root=latin_name, subtrees=None, species=species)
+        species = Species(name_latin=latin_name, name_common=common_name, recording_datas=recording_datas)
+        leaf = TaxonomyTree(rank='species', root=latin_name, subtrees=None, parent=genus_node, species=species)
         if genus_node._subtrees is None:
             genus_node._subtrees = []
         genus_node._subtrees.append(leaf)

@@ -41,5 +41,5 @@ with open(TAXONOMY_INFORMATION, 'w', newline='', encoding='utf-8') as f:
 for row in species_information:
     family, genus, species, latin_name, common_name \
         = row['family'], row['genus'], row['species'], row['latin_name'], row['common_name']
-    taxonomy_tree.add_species(family, genus, species, latin_name, common_name, [RecordingData()])
+    taxonomy_tree.add_species(family, genus, species, latin_name, common_name, RecordingData())
 

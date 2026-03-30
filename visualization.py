@@ -6,18 +6,17 @@ def draw_scatter_static(data: list) -> None:
     Creates a static scatter plot from given data.
 
     Preconditions:
+    - all([type(comparison) == dict for comparison in data])
     - all([comparison["distance"] is not None for comparison in data])
     - all([comparison["similarity"] is not None for comparison in data])
     - all([comparison["item1"] is not None for comparison in data])
     - all([comparison["item2"] is not None for comparison in data])
-
     """
     x = []
     y = []
     labels = []
 
     for comparison in data:
-        print(comparison)
         x.append(comparison["distance"])
         y.append(comparison["similarity"])
         labels.append(comparison["item1"] + " & " + comparison["item2"])
@@ -42,6 +41,7 @@ def draw_scatter_interactive(data: list) -> None:
     Creates an interactive scatter plot from given data.
 
     Preconditions:
+    - all([type(comparison) == dict for comparison in data])
     - all([comparison["distance"] is not None for comparison in data])
     - all([comparison["similarity"] is not None for comparison in data])
     - all([comparison["item1"] is not None for comparison in data])

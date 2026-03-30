@@ -340,31 +340,31 @@ class RecordingData:
 
 
 # variables for testing
-Parus_major = TaxonomyTree(
-    rank='Species',
-    root='Parus_major',
-    subtrees=None,
-    parent=None,
-    species=Species('Parus_major', 'Great_Tit', RecordingData(['']))
-)
-Parus_minor = TaxonomyTree(
-    rank='Species',
-    root='Parus_minor',
-    subtrees=None,
-    parent=None,
-    species=Species('Parus_minor', 'Japanese_tit', RecordingData(['']))
-)
-tree = TaxonomyTree(
-    rank='Class',
-    root='Aves',
-    subtrees=[TaxonomyTree(
-        rank='Order',
-        root='Passeriformes',
-        subtrees=[TaxonomyTree(
-            rank='Family',
-            root='Paridae',
-            subtrees=[TaxonomyTree(
-                rank='Genus',
-                root='Parus',
-                subtrees=[Parus_major, Parus_minor])])])]
-)
+# Parus_major = TaxonomyTree(
+#     rank='Species',
+#     root='Parus_major',
+#     subtrees=None,
+#     parent=None,
+#     species=Species('Parus_major', 'Great_Tit', RecordingData(['']))
+# )
+# Parus_minor = TaxonomyTree(
+#     rank='Species',
+#     root='Parus_minor',
+#     subtrees=None,
+#     parent=None,
+#     species=Species('Parus_minor', 'Japanese_tit', RecordingData(['']))
+# )
+# tree = TaxonomyTree(
+#     rank='Class',
+#     root='Aves',
+#     subtrees=[TaxonomyTree(
+#         rank='Order',
+#         root='Passeriformes',
+#         subtrees=[TaxonomyTree(
+#             rank='Family',
+#             root='Paridae',
+#             subtrees=[TaxonomyTree(
+#                 rank='Genus',
+#                 root='Parus',
+#                 subtrees=[Parus_major, Parus_minor])])])]
+# )

@@ -86,11 +86,12 @@ def draw_scatter_interactive(data: list) -> None:
     fig.show()
 
 
-example = {
-    'item1': "AAA",
-    'item2': "BBB",
-    'distance': 5,
-    'similarity': 5,
-}
+if __name__ == '__main__':
+    example = {
+        'item1': "AAA",
+        'item2': "BBB",
+        'distance': 5,
+        'similarity': 5,
+    }
 
-draw_scatter_interactive([example])
+    draw_scatter_interactive([example])

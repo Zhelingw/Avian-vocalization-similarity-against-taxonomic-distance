@@ -84,25 +84,6 @@ class TaxonomyTree:
                 species.update(subtree.get_all_species())
             return species
 
-    # def get_all_trees_of_rank(self, target_rank: str) -> dict[str, TaxonomyTree]:
-    #     """
-    #     Return a mapping of all latin names of each node at the required rank to its tree.
-    #
-    #     Preconditions:
-    #     - self._rank in {'class', 'order', 'family', 'genus', 'species'}
-    #
-    #     >>> all_species = tree.get_all_trees_of_rank('species')
-    #     >>> [species for species in all_species]
-    #     ['Parus_major', 'Parus_minor']
-    #     """
-    #     if self._species is not None:
-    #         return {self._root: self}
-    #     else:
-    #         species = {}
-    #         for subtree in self._subtrees:
-    #             species.update(subtree.get_all_species())
-    #         return species
-
     def get_species(self, latin_name: str) -> TaxonomyTree | None:
         """
         Return the TaxonomyTree object that represents the species corresponding to the latin_name string,
@@ -120,18 +101,6 @@ class TaxonomyTree:
             return all_species[latin_name]
         else:
             return None
-        # if self._species is not None:
-        #     if self._root == latin_name:
-        #         return self
-        #     else:
-        #         return None
-        # else:
-        #     for tree in self._subtrees:
-        #         species = tree.get_species(latin_name)
-        #         if species is not None:
-        #             return species
-        #     return None
-        # if latin_name not in self.get_all_species()
 
     def add_species(
             self,
@@ -139,19 +108,36 @@ class TaxonomyTree:
             genus: str,
             latin_name: str,
             common_name: str,
-            recording_datas: RecordingData
+            recording_data: RecordingData  # 改成单数 recording_data
     ) -> None:
-        """Add in the new species with the given information.
+        """Add a new species. Support multiple Orders (Passeriformes, Strigiformes, Piciformes, etc.)"""
 
-            Preconditions:
-            - self._rank == 'class'
-            - all the family, genus, species, latin_name, common_name are valid names from the Xeno-Canto API
-        """
-        order_node = self._get_or_create_child('order', 'Passeriformes')
+        # 根据 family 判断所属 Order（可后续轻松扩展）
+        if family.lower() in ['picidae']:
+            order_name = 'Piciformes'
+        elif family.lower() in ['strigidae']:
+            order_name = 'Strigiformes'
+        else:
+            order_name = 'Passeriformes'
+
+        order_node = self._get_or_create_child('order', order_name)
         family_node = order_node._get_or_create_child('family', family)
         genus_node = family_node._get_or_create_child('genus', genus)
-        species = Species(name_latin=latin_name, name_common=common_name, recording_datas=recording_datas)
-        leaf = TaxonomyTree(rank='species', root=latin_name, subtrees=None, parent=genus_node, species=species)
+
+        species_obj = Species(
+            name_latin=latin_name,
+            name_common=common_name,
+            recording_data=recording_data
+        )
+
+        leaf = TaxonomyTree(
+            rank='species',
+            root=latin_name,
+            subtrees=None,
+            parent=genus_node,
+            species=species_obj
+        )
+
         if genus_node._subtrees is None:
             genus_node._subtrees = []
         genus_node._subtrees.append(leaf)
@@ -187,6 +173,8 @@ class TaxonomyTree:
         1
         >>> tree.get_distance_between('Numenius_tenuirostris', 'Parus_major') is None
         True
+        >>> tree.get_distance_between('Parus_major', 'Aegolius_acadicus')
+        4
         """
         s1_heritage = []
         s1_tracer = self.get_species(species1)
@@ -224,11 +212,11 @@ class Species:
     name_common: str
     recording_data: RecordingData
 
-    def __init__(self, name_latin: str, name_common: str, recording_datas: RecordingData) -> None:
+    def __init__(self, name_latin: str, name_common: str, recording_data: RecordingData) -> None:
         """Initialize the Species information."""
         self.name_latin = name_latin
         self.name_common = name_common
-        self.recording_data = recording_datas
+        self.recording_data = recording_data
 
 
 class RecordingData:
@@ -339,32 +327,69 @@ class RecordingData:
         return vector
 
 
-# variables for testing
-# Parus_major = TaxonomyTree(
-#     rank='Species',
-#     root='Parus_major',
-#     subtrees=None,
-#     parent=None,
-#     species=Species('Parus_major', 'Great_Tit', RecordingData(['']))
-# )
-# Parus_minor = TaxonomyTree(
-#     rank='Species',
-#     root='Parus_minor',
-#     subtrees=None,
-#     parent=None,
-#     species=Species('Parus_minor', 'Japanese_tit', RecordingData(['']))
-# )
-# tree = TaxonomyTree(
-#     rank='Class',
-#     root='Aves',
-#     subtrees=[TaxonomyTree(
-#         rank='Order',
-#         root='Passeriformes',
-#         subtrees=[TaxonomyTree(
-#             rank='Family',
-#             root='Paridae',
-#             subtrees=[TaxonomyTree(
-#                 rank='Genus',
-#                 root='Parus',
-#                 subtrees=[Parus_major, Parus_minor])])])]
-# )
+# Taxonomy trees used for testing:
+
+Parus_major = TaxonomyTree(
+    rank='Species',
+    root='Parus_major',
+    subtrees=None,
+    parent=None,
+    species=Species('Parus_major', 'Great_Tit', RecordingData([]))
+)
+
+Parus_minor = TaxonomyTree(
+    rank='Species',
+    root='Parus_minor',
+    subtrees=None,
+    parent=None,
+    species=Species('Parus_minor', 'Japanese_tit', RecordingData([]))
+)
+
+Aegolius_acadicus = TaxonomyTree(
+    rank='Species',
+    root='Aegolius_acadicus',
+    subtrees=None,
+    parent=None,
+    species=Species('Aegolius_acadicus', 'Northern Saw-whet Owl', RecordingData([]))
+)
+
+tree = TaxonomyTree(
+    rank='Class',
+    root='Aves',
+    subtrees=[
+        TaxonomyTree(
+            rank='Order',
+            root='Passeriformes',
+            subtrees=[
+                TaxonomyTree(
+                    rank='Family',
+                    root='Paridae',
+                    subtrees=[
+                        TaxonomyTree(
+                            rank='Genus',
+                            root='Parus',
+                            subtrees=[Parus_major, Parus_minor]
+                        )
+                    ]
+                )
+            ]
+        ),
+        TaxonomyTree(
+            rank='Order',
+            root='Strigiformes',
+            subtrees=[
+                TaxonomyTree(
+                    rank='Family',
+                    root='Strigidae',
+                    subtrees=[
+                        TaxonomyTree(
+                            rank='Genus',
+                            root='Aegolius',
+                            subtrees=[Aegolius_acadicus]
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+)

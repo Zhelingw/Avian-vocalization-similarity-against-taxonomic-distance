@@ -9,7 +9,6 @@ from classes import tree as example_tree
 
 from import_images import get_thumbnail
 from tree_style import STYLESHEET
-from image_fallback import FALLBACK
 
 TINT_OPACITY = 0.7
 IMAGE_MAPPING = {}
@@ -97,7 +96,7 @@ def calculate_tree_layout(tree: TaxonomyTree) -> tuple[dict, list, list]:
             species_data = node.get_species_data()
 
             if species_data:
-                url = FALLBACK[node_id] or get_thumbnail(species_data.name_common)
+                url = get_thumbnail(species_data.name_common)
                 IMAGE_MAPPING[node_id] = url
 
             return positions[node_id][0]
@@ -163,7 +162,7 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
     app.layout = html.Div([
         html.Header([
             DashIconify(icon="gis:tree", width=30, style={'marginRight': '10px'}),
-            html.H2("Taxonomic Tree of selected species of orders Passeriformes, Strigiformes, and Piciformes",
+            html.H2("Dynamic Taxonomic Tree",
                     style={'display': 'inline', 'fontFamily': 'Courier New'}),
         ], style={'textAlign': 'center', 'padding': '20px', 'borderBottom': '1px solid #ccc'}),
 
@@ -203,7 +202,6 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
 
         return generate_elements(positions, edges, leaves, tint_colors=new_tints)
 
-    print(IMAGE_MAPPING)
     print("Launching interactive tree on http://127.0.0.1:8050/")
     app.run()
 
@@ -237,8 +235,4 @@ if __name__ == '__main__':
 
     # For real application pass in a complete TaxonomyTree object
     # For comparison_data, follows the same format all other graphs
-<<<<<<< Updated upstream
     run_interactive_taxonomic_tree(example_tree, comparison_data)
-=======
-    run_interactive_taxonomic_tree(root_tree, comparison_data)
->>>>>>> Stashed changes

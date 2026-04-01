@@ -1,5 +1,4 @@
-
-import dash
+import csv, os, dash, pygame, random, time
 from dash import html, Input, Output
 import dash_cytoscape as cyto
 from dash_iconify import DashIconify
@@ -15,12 +14,44 @@ TINT_OPACITY = 0.7
 IMAGE_MAPPING = {}
 BLANK_IMG = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 
+pygame.mixer.init(44100, -16, 2, 2048)
+
+def play_random_mp3(folder_path: str) -> None:
+    """
+    Plays a random mp3 file from folder_path.
+    The folder must contain at least one mp3 file.
+
+    Preconditions:
+     - os.path.isdir(folder_path) == True
+    - sum([1 for f in os.listdir(folder_path) if f.lower().endswith('.mp3')]) > 0
+    """
+    max_size = 1024 * 1024 # Only play audio whose size is less than 1mb
+
+    mp3_files = [
+        f for f in os.listdir(folder_path)
+        if f.lower().endswith('.mp3')
+           and os.path.getsize(os.path.join(folder_path, f)) < max_size]
+
+    random_file = random.choice(mp3_files)
+    file_path = os.path.join(folder_path, random_file)
+
+    print(f"Loading and playing: {random_file}")
+
+    try:
+        if pygame.mixer.music.get_busy():
+            pygame.mixer.music.stop()
+
+        pygame.mixer.music.load(file_path)
+        pygame.mixer.music.play()
+
+    except pygame.error as e:
+        print(f"An error occurred while trying to play the file: {e}")
+
 def build_similarity_map(data: list[dict]) -> dict:
     """
     Creates a similarity mapping based on given data
 
     Preconditions:
-    - all([type(comparison) == dict for comparison in data])
     - all([comparison["similarity"] is not None for comparison in data])
     - all([comparison["item1"] is not None for comparison in data])
     - all([comparison["item2"] is not None for comparison in data])
@@ -31,11 +62,12 @@ def build_similarity_map(data: list[dict]) -> dict:
     """
     sim_map = {}
     max_sim = 0
+    min_sim = 0
 
     for comparison in data:
         # User defined keys
-        n1 = comparison.get('item1')
-        n2 = comparison.get('item2')
+        n1 = comparison.get('item1').replace(" ", "_")
+        n2 = comparison.get('item2').replace(" ", "_")
         sim = comparison.get('similarity', 0.0)
 
         if not sim_map.get(n1): sim_map[n1] = {}
@@ -47,28 +79,76 @@ def build_similarity_map(data: list[dict]) -> dict:
 
         if sim > max_sim:
             max_sim = sim
+        elif sim < min_sim:
+            min_sim = sim
 
     # Indexes max similarity for computation
     sim_map["_max"] = max_sim
+    sim_map["_min"] = min_sim
+    sim_map["_dif"] = abs(max_sim - min_sim)
 
     return sim_map
 
 
-def get_similarity_color_rgba(similarity: float, opacity: float, max_similarity: float) -> str:
+def get_similarity_color_rgba(similarity: float, opacity: float, max_sim: float, max_sim_dif) -> str:
     """
     Converts 0 to max similarity to Blue-to-Red RGBA string.
     Blue (0 sim) -> Red (max sim)
     """
-    # Clamp between 0 and max_similarity
-    sim = max(0.0, min(float(max_similarity), float(similarity)))
+    dif = abs(max_sim - similarity)
+    ratio = dif / max_sim_dif
 
-    # Normalize to 0.0 - 1.0 range for RGB math
-    norm_sim = sim / max_similarity
-
-    r = int(norm_sim * 255)
-    b = int((1 - norm_sim) * 255)
+    r = int(ratio * 255)
+    b = int((1 - ratio) * 255)
 
     return f'rgba({r}, 0, {b}, {opacity})'
+
+def load_comparison_csv(file_name: str) -> list[dict]:
+    """
+    Loads a predefined CSV file of computed comparison data.
+    Then formats into a list of dictionaries for visualization.
+
+    Preconditions:
+    - file_name != ""
+    """
+    data = []
+
+    with open(file_name) as csv_file:
+        csv_reader = csv.reader(csv_file)
+        next(csv_reader, None)
+
+        for row in csv_reader:
+            comparison_data = {
+                'item1': row[0],
+                'item2': row[1],
+                'distance': int(row[2]),
+                'similarity': float(row[3]),
+            }
+
+            data.append(comparison_data)
+
+    return data
+
+
+def save_img_url(urls: dict[str, str]) -> None:
+    """
+    Saves a dict of bird image URLS as CSV in case of web requests fail
+    """
+    os.makedirs('bird_data', exist_ok=True)
+
+    fieldnames = ['name', 'url']
+    file_path = 'bird_data/image_urls.csv'
+    file_exists = os.path.isfile(file_path)
+
+    with open(file_path, 'a', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+
+        if not file_exists:
+            writer.writeheader()
+
+        formatted_rows = [{'name': name, 'url': url} for name, url in urls.items()]
+
+        writer.writerows(formatted_rows)
 
 
 def calculate_tree_layout(tree: TaxonomyTree) -> tuple[dict, list, list]:
@@ -83,21 +163,26 @@ def calculate_tree_layout(tree: TaxonomyTree) -> tuple[dict, list, list]:
     edges = []
     leaves = []
     leaf_counter = [0]
+    alternate = [0]
 
     def traverse(node, depth=0):
         node_id = node.get_root()
         subtrees = node.get_subtrees()
 
         if not subtrees:  # Leaf
-            positions[node_id] = (leaf_counter[0], depth)
+            positions[node_id] = (leaf_counter[0], depth + alternate[0])
             leaf_counter[0] += 1
+            alternate[0] += 1
             leaves.append(node_id)
+
+            if alternate[0] >= 2:
+                alternate[0] = 0
 
             # Fetches bird image
             species_data = node.get_species_data()
 
             if species_data:
-                url = FALLBACK[node_id] or get_thumbnail(species_data.name_common)
+                url = FALLBACK.get(node_id) or get_thumbnail(species_data.name_common)
                 IMAGE_MAPPING[node_id] = url
 
             return positions[node_id][0]
@@ -154,7 +239,9 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
     """Initializes and runs the Dash web application."""
     positions, edges, leaves = calculate_tree_layout(tree)
     similarity_lookup = build_similarity_map(data)
-    max_similarity = similarity_lookup.get("_max", 5)
+
+    max_sim = similarity_lookup.get("_max", 0)
+    max_sim_dif = similarity_lookup.get("_dif", 0)
 
     initial_elements = generate_elements(positions, edges, leaves)
 
@@ -163,7 +250,7 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
     app.layout = html.Div([
         html.Header([
             DashIconify(icon="gis:tree", width=30, style={'marginRight': '10px'}),
-            html.H2("Taxonomic Tree of selected species of orders Passeriformes, Strigiformes, and Piciformes",
+            html.H2("Taxonomic Tree of selected species",
                     style={'display': 'inline', 'fontFamily': 'Courier New'}),
         ], style={'textAlign': 'center', 'padding': '20px', 'borderBottom': '1px solid #ccc'}),
 
@@ -196,47 +283,28 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
 
             if str(node) == clicked_node:
                 new_tints[node] = 'rgba(255, 255, 0, 0.6)' # Yellow color for selected
+
+                leaf = tree.get_species(node)
+                family = leaf.get_parent().get_parent().get_root()
+
+                play_random_mp3('bird_data/' + family + '/' + node)
             else:
                 # Update color based on similarity score
                 sim = similarity_lookup.get(clicked_node, {}).get(str(node), 0.0)
-                new_tints[node] = get_similarity_color_rgba(sim, TINT_OPACITY, max_similarity)
+                new_tints[node] = get_similarity_color_rgba(sim, TINT_OPACITY, max_sim, max_sim_dif)
 
         return generate_elements(positions, edges, leaves, tint_colors=new_tints)
 
-    for name, url in IMAGE_MAPPING.items():
-        print(name, url)
+    # Update url data everytime to store new urls
+    save_img_url(IMAGE_MAPPING)
+
     print("Launching interactive tree on http://127.0.0.1:8050/")
     app.run()
 
 
 if __name__ == '__main__':
-    # Example for testing
-    leaf_aaa = TaxonomyTree("", "AAA", [])
-    leaf_bbb = TaxonomyTree("", "BBB", [])
-    leaf_ccc = TaxonomyTree("", "CCC", [])
-    leaf_ddd = TaxonomyTree("", "DDD", [])
-    parent_1 = TaxonomyTree("", "Parent1", [leaf_aaa, leaf_bbb])
-    parent_2 = TaxonomyTree("", "Parent2", [leaf_ccc, leaf_ddd])
-    root_tree = TaxonomyTree("", "Root", [parent_1, parent_2])
+    import process_recordings
 
-    comparison_data = [
-        {'item1': "AAA", 'item2': "BBB", 'similarity': 4.5},  # High
-        {'item1': "AAA", 'item2': "CCC", 'similarity': 2.0},  # Medium
-        {'item1': "AAA", 'item2': "DDD", 'similarity': 0.5},  # Low
-        {'item1': "BBB", 'item2': "CCC", 'similarity': 1.0},
-        {'item1': "BBB", 'item2': "DDD", 'similarity': 3.0},
-        {'item1': "CCC", 'item2': "DDD", 'similarity': 5.0},  # Very high
-    ]
-
-    # For testing
-    # IMAGE_MAPPING = {
-    #     "AAA": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/"
-    #            "Great_tit_%28Parus_major%29%2C_Parc_du_Rouge-Cloitre%2C_For%C3%AAt_de_Soignes%2C_Brussels_%"
-    #            "2826194636951%29.jpg/330px-Great_tit_%28Parus_major%29%2C_Parc_du_Rouge-Cloitre%2C_For%C3%AAt_de_Soignes%"
-    #            "2C_Brussels_%2826194636951%29.jpg"
-    # }
-
-    # For real application pass in a complete TaxonomyTree object
-    # For comparison_data, follows the same format all other graphs
-    run_interactive_taxonomic_tree(example_tree, comparison_data)
-    run_interactive_taxonomic_tree(root_tree, comparison_data)
+    species_information = process_recordings.build_species_info('bird_data/bird_metadata.csv')
+    taxonomy_tree = process_recordings.build_taxonomy_tree(species_information)
+    run_interactive_taxonomic_tree(taxonomy_tree, species_information)

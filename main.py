@@ -19,7 +19,6 @@ import os
 
 from classes import TaxonomyTree, Species, RecordingData
 from sound_analysis import (
-    features_to_vector,
     normalize_features,
     cosine_similarity
 )

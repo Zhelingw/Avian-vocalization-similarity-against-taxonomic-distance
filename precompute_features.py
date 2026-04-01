@@ -18,7 +18,6 @@ import csv
 from statistics import mean
 
 from classes import RecordingData
-from sound_analysis import features_to_vector
 
 API_DATA_FILE = 'bird_data/bird_metadata.csv'
 OUTPUT_FILE = 'bird_data/species_features.csv'
@@ -63,8 +62,8 @@ def precompute_and_save() -> None:
         print(f'  {latin_name} ({len(paths)} recordings)...', end='', flush=True)
         recording = RecordingData(paths)
 
-        if recording.features and recording.features != {}:
-            vector = features_to_vector(recording.features)
+        vector = recording.get_feature_vector()
+        if vector:
             rows.append([latin_name] + vector)
             print(' done')
         else:

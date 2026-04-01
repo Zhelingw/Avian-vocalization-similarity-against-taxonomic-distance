@@ -2,7 +2,6 @@
 CSC111 Project 2: Sound Analysis Module
 
 This module handles vocalization similarity computation, including:
-- Converting RecordingData feature dicts into feature vectors
 - Z-score normalization (to prevent features with large ranges from dominating)
 - Cosine similarity computation
 - Pairwise similarity comparison across all species
@@ -14,27 +13,6 @@ Copyright (c) 2026 Lucy Wang, Yiming Xu, Ted Song. All rights reserved.
 """
 from __future__ import annotations
 import math
-
-
-###############################################################################
-# Feature vector conversion
-###############################################################################
-def features_to_vector(features: dict) -> list[float]:
-    """Convert a RecordingData.features dict into an ordered feature vector for similarity computation.
-
-    Vector order: mfcc[0..n] + pitch_mean + centroid_mean + bandwidth_mean + rms_mean
-
-    Preconditions:
-        - features != {}
-        - 'mfcc' in features
-        - all(k in features for k in ['pitch_mean', 'centroid_mean', 'bandwidth_mean', 'rms_mean'])
-    """
-    vector = list(features['mfcc'])
-    vector.append(features['pitch_mean'])
-    vector.append(features['centroid_mean'])
-    vector.append(features['bandwidth_mean'])
-    vector.append(features['rms_mean'])
-    return vector
 
 
 ###############################################################################

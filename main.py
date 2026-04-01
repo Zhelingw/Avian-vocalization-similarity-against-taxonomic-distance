@@ -5,6 +5,8 @@ import csv
 import statistics
 import matplotlib.pyplot as plt
 from scipy import stats
+import visualize_tree
+import process_recordings
 
 COMPARISON_DATA_FILE = 'bird_data/comparison_data.csv'
 
@@ -145,7 +147,12 @@ def analyze_correlation() -> None:
 
 
 if __name__ == '__main__':
-    draw_graph_of('Ninox connivens')
-    draw_full_graph()
-    analyze_distance_statistics()
-    analyze_correlation()
+    species_information = process_recordings.build_species_info('bird_data/bird_metadata.csv')
+    process_recordings.write_taxonomy_csv(species_information, 'bird_data/bird_taxonomy.csv')
+    taxonomy_tree = process_recordings.build_taxonomy_tree(species_information)
+
+    # draw_graph_of('Ninox connivens')
+    # draw_full_graph()
+    # analyze_distance_statistics()
+    # analyze_correlation()
+    visualize_tree.run_interactive_taxonomic_tree(taxonomy_tree, species_information)

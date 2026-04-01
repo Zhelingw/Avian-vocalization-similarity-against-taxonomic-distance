@@ -240,8 +240,5 @@ if __name__ == '__main__':
 
     # For real application pass in a complete TaxonomyTree object
     # For comparison_data, follows the same format all other graphs
-    run_interactive_taxonomic_tree(example_tree, comparison_data)
-<<<<<<< Updated upstream
-    run_interactive_taxonomic_tree(root_tree, comparison_data)
-=======
->>>>>>> Stashed changes
+#     run_interactive_taxonomic_tree(example_tree, comparison_data)
+#     run_interactive_taxonomic_tree(root_tree, comparison_data)

@@ -38,8 +38,10 @@ def build_similarity_map(data: list[dict]) -> dict:
         n2 = comparison.get('item2')
         sim = comparison.get('similarity', 0.0)
 
-        if not sim_map.get(n1): sim_map[n1] = {}
-        if not sim_map.get(n2): sim_map[n2] = {}
+        if not sim_map.get(n1):
+            sim_map[n1] = {}
+        if not sim_map.get(n2):
+            sim_map[n2] = {}
 
         # Bidirectional
         sim_map[n1][n2] = sim
@@ -192,10 +194,11 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
         new_tints = {}
 
         for node in positions:
-            if node not in leaves: continue
+            if node not in leaves:
+                continue
 
             if str(node) == clicked_node:
-                new_tints[node] = 'rgba(255, 255, 0, 0.6)' # Yellow color for selected
+                new_tints[node] = 'rgba(255, 255, 0, 0.6)'  # Yellow color for selected
             else:
                 # Update color based on similarity score
                 sim = similarity_lookup.get(clicked_node, {}).get(str(node), 0.0)

@@ -156,3 +156,19 @@ if __name__ == '__main__':
     # analyze_distance_statistics()
     # analyze_correlation()
     visualize_tree.run_interactive_taxonomic_tree(taxonomy_tree, species_information)
+
+# if __name__ == '__main__':
+#     # ... 你的 example_tree 和 comparison_data ...
+#     species_information = process_recordings.build_species_info('bird_data/bird_metadata.csv')
+#     process_recordings.write_taxonomy_csv(species_information, 'bird_data/bird_taxonomy.csv')
+#     taxonomy_tree = process_recordings.build_taxonomy_tree(species_information)
+#
+#     print("=== Starting with example_tree ===")
+#     similarity_lookup = visualize_tree.build_similarity_map(species_information)  # 先计算一次
+#     max_similarity = similarity_lookup.get("_max", 5.0)
+#     positions, edges, leaves = visualize_tree.calculate_tree_layout(taxonomy_tree)
+#
+#     visualize_tree.run_interactive_taxonomic_tree(taxonomy_tree, species_information)  # 只跑一个！
+
+    # 暂时注释掉第二个，避免端口冲突和变量覆盖
+    # run_interactive_taxonomic_tree(root_tree, comparison_data)

@@ -4,6 +4,7 @@ from collections import defaultdict
 import csv
 import statistics
 import matplotlib.pyplot as plt
+from scipy import stats
 
 COMPARISON_DATA_FILE = 'bird_data/comparison_data.csv'
 
@@ -104,7 +105,47 @@ def draw_graph_of(species_name: str) -> None:
         draw_scatter_interactive(filtered_data, species_name)
 
 
+def analyze_correlation() -> None:
+    """
+    Analyse the correlation between Taxonomic Distance and Vocalization Similarity,
+    Output Pearson r, R^2, p-value
+    """
+
+    with open(COMPARISON_DATA_FILE, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        data = list(reader)
+
+    distances = []
+    similarities = []
+
+    for row in data:
+        try:
+            dist = float(row['distance'])
+            sim = float(row['similarity'])
+            distances.append(dist)
+            similarities.append(sim)
+        except (ValueError, TypeError, KeyError):
+            continue
+
+    if len(distances) < 3:
+        print("no sufficient data")
+        return
+
+    # Pearson correlation analysis
+    r, p_value = stats.pearsonr(distances, similarities)
+    r_squared = r ** 2
+
+    print("\n" + "="*70)
+    print("Taxonomic Distance vs Vocalization Similarity correlation analysis")
+    print("="*65)
+    print(f"Pearson r   : {r:.4f}")
+    print(f"R^2         : {r_squared:.4f}  ({r_squared*100:.2f}%)")
+    print(f"p-value     : {p_value:.6f}")
+    print("="*70)
+
+
 if __name__ == '__main__':
     draw_graph_of('Ninox connivens')
     draw_full_graph()
     analyze_distance_statistics()
+    analyze_correlation()

@@ -15,8 +15,6 @@ Output:
 Copyright (c) 2026 Lucy Wang, Yiming Xu, Ted Song. All rights reserved.
 """
 import csv
-from statistics import mean
-
 from classes import RecordingData
 from sound_analysis import features_to_vector
 

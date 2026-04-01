@@ -92,11 +92,11 @@ def calculate_tree_layout(tree: TaxonomyTree) -> tuple[dict, list, list]:
             leaves.append(node_id)
 
             # Fetches bird image
-            species_data = tree.get_species_data()
+            species_data = node.get_species_data()
 
             if species_data:
                 url = get_thumbnail(species_data.name_common)
-                IMAGE_MAPPING[node] = url
+                IMAGE_MAPPING[node_id] = url
 
             return positions[node_id][0]
         else:  # Parent
@@ -225,13 +225,13 @@ if __name__ == '__main__':
     ]
 
     # For testing
-    IMAGE_MAPPING = {
-        "AAA": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/"
-               "Great_tit_%28Parus_major%29%2C_Parc_du_Rouge-Cloitre%2C_For%C3%AAt_de_Soignes%2C_Brussels_%"
-               "2826194636951%29.jpg/330px-Great_tit_%28Parus_major%29%2C_Parc_du_Rouge-Cloitre%2C_For%C3%AAt_de_Soignes%"
-               "2C_Brussels_%2826194636951%29.jpg"
-    }
+    # IMAGE_MAPPING = {
+    #     "AAA": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/"
+    #            "Great_tit_%28Parus_major%29%2C_Parc_du_Rouge-Cloitre%2C_For%C3%AAt_de_Soignes%2C_Brussels_%"
+    #            "2826194636951%29.jpg/330px-Great_tit_%28Parus_major%29%2C_Parc_du_Rouge-Cloitre%2C_For%C3%AAt_de_Soignes%"
+    #            "2C_Brussels_%2826194636951%29.jpg"
+    # }
 
     # For real application pass in a complete TaxonomyTree object
     # For comparison_data, follows the same format all other graphs
-    run_interactive_taxonomic_tree(root_tree, comparison_data)
+    run_interactive_taxonomic_tree(example_tree, comparison_data)

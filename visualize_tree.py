@@ -203,7 +203,8 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
 
         return generate_elements(positions, edges, leaves, tint_colors=new_tints)
 
-    print(IMAGE_MAPPING)
+    for name, url in IMAGE_MAPPING.items():
+        print(name, url)
     print("Launching interactive tree on http://127.0.0.1:8050/")
     app.run()
 
@@ -237,8 +238,5 @@ if __name__ == '__main__':
 
     # For real application pass in a complete TaxonomyTree object
     # For comparison_data, follows the same format all other graphs
-<<<<<<< Updated upstream
     run_interactive_taxonomic_tree(example_tree, comparison_data)
-=======
     run_interactive_taxonomic_tree(root_tree, comparison_data)
->>>>>>> Stashed changes

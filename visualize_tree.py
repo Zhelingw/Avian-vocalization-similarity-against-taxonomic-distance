@@ -1,4 +1,3 @@
-
 import dash
 from dash import html, Input, Output
 import dash_cytoscape as cyto
@@ -165,7 +164,7 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
     app.layout = html.Div([
         html.Header([
             DashIconify(icon="gis:tree", width=30, style={'marginRight': '10px'}),
-            html.H2("Taxonomic Tree of selected species of orders Passeriformes, Strigiformes, and Piciformes",
+            html.H2("Dynamic Taxonomic Tree",
                     style={'display': 'inline', 'fontFamily': 'Courier New'}),
         ], style={'textAlign': 'center', 'padding': '20px', 'borderBottom': '1px solid #ccc'}),
 
@@ -242,4 +241,7 @@ if __name__ == '__main__':
     # For real application pass in a complete TaxonomyTree object
     # For comparison_data, follows the same format all other graphs
     run_interactive_taxonomic_tree(example_tree, comparison_data)
+<<<<<<< Updated upstream
     run_interactive_taxonomic_tree(root_tree, comparison_data)
+=======
+>>>>>>> Stashed changes

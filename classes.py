@@ -60,6 +60,31 @@ class TaxonomyTree:
         """
         return self._root
 
+    def get_root(self) -> str:
+        """
+        Return the root of the current tree.
+        """
+        return self._root
+
+    def get_parent(self) -> TaxonomyTree:
+        """
+        Return the parent of the current tree.
+        """
+        return self._parent
+
+    def get_subtrees(self) -> list:
+        """
+        Return the subtrees of the current tree.
+        """
+        return self._subtrees
+
+    def get_species_data(self) -> Species | None:
+        """
+        Return the species data class of the tree if it represents a species.
+        None if otherwise.
+        """
+        return self._species
+
     def get_rank(self) -> str:
         """
         Return the rank of the root of the current tree.

@@ -1,4 +1,3 @@
-
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import csv
@@ -41,7 +40,7 @@ def draw_scatter_static(data: list) -> None:
 
 def draw_scatter_interactive(data: list[dict], species_name: str = '') -> None:
     """Draw a scatter plot of the species analysis data,
-    with detailed informations when mouse hovers over the data points."""
+    with detailed information when mouse hovers over the data points."""
     x = []
     y = []
     hover_texts = []

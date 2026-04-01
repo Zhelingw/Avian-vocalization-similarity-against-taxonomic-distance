@@ -8,6 +8,7 @@ from classes import tree as example_tree
 
 from import_images import get_thumbnail
 from tree_style import STYLESHEET
+from image_fallback import FALLBACK
 
 TINT_OPACITY = 0.7
 IMAGE_MAPPING = {}
@@ -95,7 +96,7 @@ def calculate_tree_layout(tree: TaxonomyTree) -> tuple[dict, list, list]:
             species_data = node.get_species_data()
 
             if species_data:
-                url = get_thumbnail(species_data.name_common)
+                url = FALLBACK[node_id] or get_thumbnail(species_data.name_common)
                 IMAGE_MAPPING[node_id] = url
 
             return positions[node_id][0]
@@ -201,6 +202,7 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
 
         return generate_elements(positions, edges, leaves, tint_colors=new_tints)
 
+    print(IMAGE_MAPPING)
     print("Launching interactive tree on http://127.0.0.1:8050/")
     app.run()
 

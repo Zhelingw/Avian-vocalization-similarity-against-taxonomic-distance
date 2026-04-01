@@ -27,3 +27,23 @@ phylloscopidae,Phylloscopus,pulcher,Phylloscopus_pulcher,Buff-barred Warbler
 phylloscopidae,Phylloscopus,inornatus,Phylloscopus_inornatus,Yellow-browed Warbler
 phylloscopidae,Phylloscopus,yunnanensis,Phylloscopus_yunnanensis,Chinese Leaf Warbler
 phylloscopidae,Phylloscopus,armandii,Phylloscopus_armandii,Yellow-streaked Warbler
+picidae,Dendrocoptes,medius,Dendrocoptes_medius,Middle Spotted Woodpecker
+picidae,Melanerpes,cruentatus,Melanerpes_cruentatus,Yellow-tufted Woodpecker
+picidae,Picumnus,albosquamatus,Picumnus_albosquamatus,White-wedged Piculet
+strigidae,Glaucidium,passerinum,Glaucidium_passerinum,Eurasian Pygmy Owl
+strigidae,Athene,noctua,Athene_noctua,Little Owl
+strigidae,Glaucidium,perlatum,Glaucidium_perlatum,Pearl-spotted Owlet
+picidae,Veniliornis,passerinus,Veniliornis_passerinus,Little Woodpecker
+picidae,Picumnus,temminckii,Picumnus_temminckii,Ochre-collared Piculet
+picidae,Jynx,torquilla,Jynx_torquilla,Eurasian Wryneck
+picidae,Picumnus,cirratus,Picumnus_cirratus,White-barred Piculet
+picidae,Picumnus,olivaceus,Picumnus_olivaceus,Olivaceous Piculet
+picidae,Picumnus,innominatus,Picumnus_innominatus,Speckled Piculet
+picidae,Picumnus,limae,Picumnus_limae,Ochraceous Piculet
+strigidae,Aegolius,funereus,Aegolius_funereus,Boreal Owl
+strigidae,Glaucidium,jardinii,Glaucidium_jardinii,Andean Pygmy Owl
+strigidae,Aegolius,acadicus,Aegolius_acadicus,Northern Saw-whet Owl
+strigidae,Athene,cunicularia,Athene_cunicularia,Burrowing Owl
+strigidae,Glaucidium,capense,Glaucidium_capense,African Barred Owlet
+strigidae,Ninox,connivens,Ninox_connivens,Barking Owl
+strigidae,Glaucidium,parkeri,Glaucidium_parkeri,Subtropical Pygmy Owl

@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+import csv
+
 
 def draw_scatter_static(data: list) -> None:
     """
-    Creates a static scatter plot from given data.
+    Create a static scatter plot from given data.
 
     Preconditions:
     - all([type(comparison) == dict for comparison in data])
@@ -30,60 +32,80 @@ def draw_scatter_static(data: list) -> None:
 
     i = 0
     for label in labels:
-        plt.annotate(label, xy=(x[i], y[i]), textcoords="offset points", xytext=(0,10), ha='center')
+        plt.annotate(label, xy=(x[i], y[i]), textcoords="offset points", xytext=(0, 10), ha='center')
         i += 1
 
     plt.show()
 
 
-def draw_scatter_interactive(data: list) -> None:
-    """
-    Creates an interactive scatter plot from given data.
-
-    Preconditions:
-    - all([type(comparison) == dict for comparison in data])
-    - all([comparison["distance"] is not None for comparison in data])
-    - all([comparison["similarity"] is not None for comparison in data])
-    - all([comparison["item1"] is not None for comparison in data])
-    - all([comparison["item2"] is not None for comparison in data])
-    """
+def draw_scatter_interactive(data: list[dict], species_name: str = '') -> None:
+    """Draw a scatter plot of the species analysis data,
+    with detailed information when mouse hovers over the data points."""
     x = []
     y = []
-    labels = []
+    hover_texts = []
+
+    common_name_map = load_common_name_map()
 
     for comparison in data:
+        latin1 = comparison.get("item1", "").replace(' ', '_')
+        latin2 = comparison.get("item2", "").replace(' ', '_')
+        cn1 = common_name_map.get(latin1, latin1.replace('_', ' '))
+        cn2 = common_name_map.get(latin2, latin2.replace('_', ' '))
+
         x.append(comparison["distance"])
         y.append(comparison["similarity"])
-        labels.append(comparison["item1"] + " & " + comparison["item2"])
 
-    # Create the interactive scatter plot
+        hover_text = (
+            f"<b>{latin1.replace('_', ' ')} & {latin2.replace('_', ' ')}</b><br>" +
+            f"({cn1} & {cn2})<br>" +
+            f"Distance: {comparison['distance']}<br>" +
+            f"Similarity: {comparison['similarity']:.4f}"
+        )
+        hover_texts.append(hover_text)
+
     fig = go.Figure(data=go.Scatter(
         x=x,
         y=y,
-        mode='markers+text',
-        text=labels,
-        textposition='top center',
-        marker=dict(size=12, color='royalblue'),
-
-        # Text to display when hovering over a point
-        hovertemplate=(
-                "<b>%{text}</b><br>" +
-                "Distance: %{x}<br>" +
-                "Similarity: %{y}" +
-                "<extra></extra>"
-        )
+        mode='markers',
+        marker=dict(size=10, color='royalblue', opacity=0.9),
+        hovertemplate="%{text}<extra></extra>",
+        text=hover_texts
     ))
 
-    # Update the plot with size, titles, and axis labels
+    if species_name != '':
+        title = 'Vocalization Similarity vs Taxonomic Distance between ' + species_name + ' and other species'
+    else:
+        title = 'Vocalization Similarity vs Taxonomic Distance'
+
     fig.update_layout(
-        title='Interactive 2D Scatter Plot',
+        title=title,
         xaxis_title='Taxonomic Distance',
         yaxis_title='Vocalization Similarity',
-        width=800,
-        height=600
+        width=1000,
+        height=700,
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=14,
+            bordercolor="black",
+            namelength=-1
+        ),
+        hovermode='closest'
     )
-
     fig.show()
+
+
+def load_common_name_map() -> dict:
+    """Loads a mapping of the common name of each species and its Latin name."""
+    common_map = {}
+    with open('bird_data/bird_metadata.csv', 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            latin = row.get('latin_name')
+            common = row.get('common_name', '')
+            if latin:
+                common_map[latin] = common
+    return common_map
 
 
 if __name__ == '__main__':

@@ -15,8 +15,6 @@ Output:
 Copyright (c) 2026 Lucy Wang, Yiming Xu, Ted Song. All rights reserved.
 """
 import csv
-from statistics import mean
-
 from classes import RecordingData
 
 API_DATA_FILE = 'bird_data/bird_metadata.csv'

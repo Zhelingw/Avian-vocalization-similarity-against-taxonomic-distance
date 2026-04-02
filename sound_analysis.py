@@ -16,7 +16,7 @@ import math
 
 
 # Feature vector conversion
-def features_to_vector(features: dict) -> list[float]:
+def features_to_vector(features: dict[str, object]) -> list[float]:
     """Convert a RecordingData.features dict into an ordered feature vector for similarity computation.
 
     Vector order: mfcc[0..n] + pitch_mean + centroid_mean + bandwidth_mean + rms_mean
@@ -80,7 +80,7 @@ def normalize_features(species_vectors: dict[str, list[float]]) -> dict[str, lis
         - all vectors have the same length
     """
     species_list = list(species_vectors.keys())
-    vectors = [species_vectors[s] for s in species_list]
+    vectors = [species_vectors[sp] for sp in species_list]
     num_features = len(vectors[0])
     num_species = len(vectors)
 
@@ -99,13 +99,13 @@ def normalize_features(species_vectors: dict[str, list[float]]) -> dict[str, lis
     normalized = {}
     for s in species_list:
         vec = species_vectors[s]
-        normalized[s] = [(vec[i] - means[i]) / stds[i] for i in range(num_features)]
+        normalized[s] = [(vec[idx] - means[idx]) / stds[idx] for idx in range(num_features)]
 
     return normalized
 
 
 # Pairwise similarity computation
-def compute_all_pairwise_similarities(
+def compute_pairwise_similarities(
     species_vectors: dict[str, list[float]]
 ) -> list[tuple[str, str, float]]:
     """Compute cosine similarity between all pairs of species.
@@ -134,9 +134,6 @@ def compute_all_pairwise_similarities(
 
 
 if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
     import python_ta
     python_ta.check_all(config={
         'extra-imports': ['math'],

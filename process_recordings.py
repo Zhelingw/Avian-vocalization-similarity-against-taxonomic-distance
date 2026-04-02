@@ -18,7 +18,6 @@ from sound_analysis import (
     normalize_features,
     cosine_similarity
 )
-# from visualization import draw_scatter_static, draw_scatter_interactive
 import os
 
 
@@ -223,49 +222,27 @@ def save_comparison_data(comparison_data: list[dict], output_file: str) -> None:
 ###############################################################################
 # Main function
 ###############################################################################
-def run_project() -> None:
-    """Run the full project pipeline:
-    1. Read metadata -> 2. Build tree -> 3. Extract features -> 4. Pairwise comparison -> 5. Visualize
+def process_data() -> None:
     """
-    # Step 1: Read metadata
-    print('Step 1: Reading bird metadata...')
+    Run the data analysis:
+    1. Read metadata -> 2. Build tree -> 3. Extract features -> 4. Pairwise comparison -> 5. output to Designated file
+    """
+    # Read metadata
     species_information = build_species_info(API_DATA_FILE)
     write_taxonomy_csv(species_information, TAXONOMY_INFORMATION)
-    print(f'  Found {len(species_information)} unique species.')
 
-    # Step 2: Build taxonomy tree
-    print('Step 2: Building taxonomy tree...')
+    # Build taxonomy tree
     taxonomy_tree = build_taxonomy_tree(species_information)
-    print('  Taxonomy tree built successfully.')
 
-    # Step 3: Extract vocalization features
-    print('Step 3: Extracting vocalization features (may take a few minutes)...')
+    # Extract vocalization features
     species_paths = collect_recording_paths(API_DATA_FILE)
     species_vectors = extract_all_species_features(species_paths)
-    print(f'  Successfully extracted features for {len(species_vectors)} species.')
 
-    # Step 4: Compute pairwise comparisons
-    print('Step 4: Computing pairwise distance and similarity...')
+    # Compute pairwise comparisons
     comparison_data = build_comparison_data(taxonomy_tree, species_vectors)
-    print(f' Computed {len(comparison_data)} pairwise comparisons.')
 
     save_comparison_data(comparison_data, COMPARISON_DATA_FILE)
 
-    # # Step 5: Visualize
-    # print('Step 5: Generating visualization...')
-    # draw_scatter_interactive(comparison_data)
-    # # draw_scatter_static(comparison_data)
-    #
-    # print('Done!')
-    #
-    # # Step 5: Visualize
-    # print('Step 5: Generating visualization...')
-    # draw_scatter_interactive(comparison_data)
-    # # Uncomment the following line for a static plot as well:
-    # # draw_scatter_static(comparison_data)
-    #
-    # print('Done!')
-
 
 if __name__ == '__main__':
-    run_project()
+    process_data()

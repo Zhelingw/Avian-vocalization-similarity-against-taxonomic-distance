@@ -133,11 +133,10 @@ class TaxonomyTree:
             genus: str,
             latin_name: str,
             common_name: str,
-            recording_data: RecordingData  # 改成单数 recording_data
+            recording_data: RecordingData
     ) -> None:
         """Add a new species. Support multiple Orders (Passeriformes, Strigiformes, Piciformes, etc.)"""
 
-        # 根据 family 判断所属 Order（可后续轻松扩展）
         if family.lower() in ['picidae']:
             order_name = 'Piciformes'
         elif family.lower() in ['strigidae']:
@@ -295,7 +294,7 @@ class RecordingData:
 
         for key in keys:
             if key == 'mfcc':
-                num_mfcc = len(features_list[0]['mfcc'])   # 应该为 8
+                num_mfcc = len(features_list[0]['mfcc'])
                 mfcc_avg = []
                 for i in range(num_mfcc):
                     values = [f['mfcc'][i] for f in features_list]
@@ -319,7 +318,7 @@ class RecordingData:
 
         y = librosa.effects.preemphasis(y, coef=0.97)
         y = librosa.util.normalize(y)
-        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13, fmin=100)  # 加上 fmin=100
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13, fmin=100)
 
         f0, voiced_flag, _ = librosa.pyin(y,
                                           fmin=float(librosa.note_to_hz('C2')),
@@ -352,7 +351,7 @@ class RecordingData:
         return vector
 
 
-# Taxonomy trees used for testing:
+# Taxonomy trees used for doc testing:
 
 Parus_major = TaxonomyTree(
     rank='Species',

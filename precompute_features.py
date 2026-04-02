@@ -80,4 +80,9 @@ def precompute_and_save() -> None:
 
 
 if __name__ == '__main__':
-    precompute_and_save()
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['csv', 'classes'],
+        'allowed-io': ['collect_recording_paths', 'precompute_and_save'],
+        'max-line-length': 120
+    })

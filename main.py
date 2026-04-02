@@ -1,10 +1,13 @@
-
 from visualization import draw_scatter_interactive
 from collections import defaultdict
 import csv
+import pygame
 import statistics
 import matplotlib.pyplot as plt
 from scipy import stats
+import process_recordings
+import visualize_tree
+import image_fallback
 
 COMPARISON_DATA_FILE = 'bird_data/comparison_data.csv'
 
@@ -145,7 +148,22 @@ def analyze_correlation() -> None:
 
 
 if __name__ == '__main__':
-    draw_graph_of('Ninox connivens')
-    draw_full_graph()
-    analyze_distance_statistics()
-    analyze_correlation()
+    species_information = process_recordings.build_species_info('bird_data/bird_metadata.csv')
+    process_recordings.write_taxonomy_csv(species_information, 'bird_data/bird_taxonomy.csv')
+    taxonomy_tree = process_recordings.build_taxonomy_tree(species_information)
+
+    # species_paths = process_recordings.collect_recording_paths(process_recordings.API_DATA_FILE)
+    # species_vectors = process_recordings.extract_all_species_features(species_paths)
+    # comparison_data = process_recordings.build_comparison_data(taxonomy_tree, species_vectors)
+
+    comparison_data = visualize_tree.load_comparison_csv('bird_data/comparison_data.csv')
+    image_fallback.load_url()  # Caches the bird image URLS
+    pygame.mixer.init(44100, -16, 2, 2048)  # Sets up audio replay for tree visualization
+
+    # draw_graph_of('Ninox connivens')
+    # draw_full_graph()
+    # analyze_distance_statistics()
+    # analyze_correlation()
+
+    # print(comparison_data)
+    visualize_tree.run_interactive_taxonomic_tree(taxonomy_tree, comparison_data)

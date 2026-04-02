@@ -173,5 +173,5 @@ if __name__ == '__main__':
     analyze_correlation()
 
     # Create the interactive taxonomy tree
-    visualize_tree.run_interactive_taxonomic_tree(taxonomy_tree, comparison_data_dict)
+    visualize_tree.run(taxonomy_tree, comparison_data_dict)
 

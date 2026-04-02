@@ -297,14 +297,17 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
         State('tree', 'zoom'),
         State('tree', 'pan')
     )
-    def update_colors_on_click(tap_node: dict) -> tuple[list, Any, Any]:
+    def update_colors_on_click(tap_node: dict, *args: Any) -> tuple[list, Any, Any]:
         """
         Handles user input when clicking on PC or tapping on mobile devices.
         Clicking on a Leaf node updates the color of all leaves based on how similar they are.
         Blue = more similar. Red = less similar.
         Clicking on a Leaf node will also play a random bird sound of the bird that the node represents.
         Clicking on the background or an edge resets the colors.
+
+        Note: Cytoscape inputs 5 arguments, but only 1 is needed. So we use *args to prevent erroring.
         """
+        print("Unused arguments:", args)
         ctx = dash.callback_context
 
         # Initial load or unhandled trigger

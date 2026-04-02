@@ -15,9 +15,7 @@ from __future__ import annotations
 import math
 
 
-###############################################################################
 # Feature vector conversion
-###############################################################################
 def features_to_vector(features: dict) -> list[float]:
     """Convert a RecordingData.features dict into an ordered feature vector for similarity computation.
 
@@ -36,9 +34,7 @@ def features_to_vector(features: dict) -> list[float]:
     return vector
 
 
-###############################################################################
 # Similarity computation
-###############################################################################
 def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
     """Compute the cosine similarity between two feature vectors.
 
@@ -71,9 +67,7 @@ def euclidean_distance(vec_a: list[float], vec_b: list[float]) -> float:
     return math.sqrt(sum((a - b) ** 2 for a, b in zip(vec_a, vec_b)))
 
 
-###############################################################################
 # Z-score normalization
-###############################################################################
 def normalize_features(species_vectors: dict[str, list[float]]) -> dict[str, list[float]]:
     """Perform Z-score normalization on all species feature vectors.
 
@@ -110,9 +104,7 @@ def normalize_features(species_vectors: dict[str, list[float]]) -> dict[str, lis
     return normalized
 
 
-###############################################################################
 # Pairwise similarity computation
-###############################################################################
 def compute_all_pairwise_similarities(
     species_vectors: dict[str, list[float]]
 ) -> list[tuple[str, str, float]]:
@@ -141,9 +133,6 @@ def compute_all_pairwise_similarities(
     return results
 
 
-###############################################################################
-# Main block
-###############################################################################
 if __name__ == '__main__':
     import doctest
     doctest.testmod()

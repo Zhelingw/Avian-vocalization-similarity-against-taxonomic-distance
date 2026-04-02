@@ -21,17 +21,13 @@ from sound_analysis import (
 import os
 
 
-###############################################################################
 # Constants
-###############################################################################
 API_DATA_FILE = 'bird_data/bird_metadata.csv'
 TAXONOMY_INFORMATION = 'bird_data/bird_taxonomy.csv'
 COMPARISON_DATA_FILE = 'bird_data/comparison_data.csv'
 
 
-###############################################################################
-# Step 1: Read metadata and build species information
-###############################################################################
+# Read metadata and build species information
 def build_species_info(metadata_file: str) -> list[dict[str, str]]:
     """Read the metadata CSV and return a list of unique species records.
 
@@ -75,9 +71,8 @@ def write_taxonomy_csv(species_information: list[dict[str, str]],
         writer.writerows(species_information)
 
 
-###############################################################################
-# Step 2: Build taxonomy tree
-###############################################################################
+
+# Build taxonomy tree
 def build_taxonomy_tree(species_information: list[dict[str, str]]) -> TaxonomyTree:
     """Build a TaxonomyTree from species_information.
     """
@@ -99,9 +94,7 @@ def build_taxonomy_tree(species_information: list[dict[str, str]]) -> TaxonomyTr
     return taxonomy_tree
 
 
-###############################################################################
-# Step 3: Extract features and build feature vector dictionary
-###############################################################################
+# Extract features and build feature vector dictionary
 def collect_recording_paths(metadata_file: str) -> dict[str, list[str]]:
     """Collect all recording file paths for each species from the metadata CSV.
 
@@ -153,9 +146,7 @@ def extract_all_species_features(
     return species_vectors
 
 
-###############################################################################
-# Step 4: Compute taxonomy distance + vocalization similarity
-###############################################################################
+# Compute taxonomy distance + vocalization similarity
 def build_comparison_data(
     taxonomy_tree: TaxonomyTree,
     species_vectors: dict[str, list[float]]
@@ -219,9 +210,6 @@ def save_comparison_data(comparison_data: list[dict], output_file: str) -> None:
         writer.writerows(comparison_data)
 
 
-###############################################################################
-# Main function
-###############################################################################
 def process_data() -> None:
     """
     Run the data analysis:

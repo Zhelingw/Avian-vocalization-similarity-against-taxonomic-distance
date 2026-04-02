@@ -294,7 +294,7 @@ class RecordingData:
 
         for key in keys:
             if key == 'mfcc':
-                num_mfcc = len(features_list[0]['mfcc'])   # 应该为 8
+                num_mfcc = len(features_list[0]['mfcc'])
                 mfcc_avg = []
                 for i in range(num_mfcc):
                     values = [f['mfcc'][i] for f in features_list]
@@ -318,7 +318,7 @@ class RecordingData:
 
         y = librosa.effects.preemphasis(y, coef=0.97)
         y = librosa.util.normalize(y)
-        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13, fmin=100)  # 加上 fmin=100
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13, fmin=100)
 
         f0, voiced_flag, _ = librosa.pyin(y,
                                           fmin=float(librosa.note_to_hz('C2')),
@@ -351,7 +351,7 @@ class RecordingData:
         return vector
 
 
-# Taxonomy trees used for testing:
+# Taxonomy trees used for doc testing:
 
 Parus_major = TaxonomyTree(
     rank='Species',

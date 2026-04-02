@@ -1,18 +1,24 @@
 # CSC111 project 2 required libraries
 
-librosa
-pygame
-plotly
-requests
-csv
-dash
-dash_iconify
-dash_cytoscape
-matplotlib
-os
-statistics
-collections
-concurrent
-scipy
-math
+# Testing and code checking
+hypothesis
+pytest
+python-ta
 
+# Audio feature extraction
+librosa
+numpy
+
+# Graphics and data visualization
+matplotlib
+plotly
+dash
+dash-cytoscape
+dash-iconify
+pygame
+
+# Scientific computing
+scipy
+
+# HTTP requests (Xeno-Canto API, Wikimedia API)
+requests

@@ -168,7 +168,6 @@ def calculate_tree_layout(tree: TaxonomyTree) -> tuple[dict, list, list]:
 
     # Uses list in replacement for global variables
     leaf_counter = [0]
-    alternate = [0]
 
     def traverse(node: TaxonomyTree, depth: int = 0) -> float:
         """
@@ -179,13 +178,10 @@ def calculate_tree_layout(tree: TaxonomyTree) -> tuple[dict, list, list]:
         subtrees = node.get_subtrees()
 
         if not subtrees:  # Leaf
-            positions[node_id] = (leaf_counter[0], depth + alternate[0])
+            spacing = round(len(leaves) % 2) # Spaces out the leaves vertically to prevent cramming
+            positions[node_id] = (leaf_counter[0], depth + spacing)
             leaf_counter[0] += 1
-            alternate[0] += 1  # Spaces out the leaves vertically to prevent cramming
             leaves.append(node_id)
-
-            if alternate[0] >= 2:
-                alternate[0] = 0
 
             species_data = node.get_species_data()
 
@@ -248,7 +244,7 @@ def generate_elements(positions: dict, edges: list, leaves: list, tint_colors: d
     return elements
 
 
-def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None:
+def run(tree: TaxonomyTree, data: list[dict]) -> None:
     """
     Main launcher that creates the tree visualizer
     Runs the tree visualizer in browser.
@@ -297,7 +293,7 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
         State('tree', 'zoom'),
         State('tree', 'pan')
     )
-    def update_colors_on_click(tap_node: dict, *args: Any) -> tuple[list, Any, Any]:
+    def on_input(tap_node: dict, *args: Any) -> tuple[list, Any, Any]:
         """
         Handles user input when clicking on PC or tapping on mobile devices.
         Clicking on a Leaf node updates the color of all leaves based on how similar they are.

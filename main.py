@@ -1,12 +1,13 @@
-
 from visualization import draw_scatter_interactive
 from collections import defaultdict
 import csv
+import pygame
 import statistics
 import matplotlib.pyplot as plt
 from scipy import stats
 import process_recordings
 import visualize_tree
+import image_fallback
 
 COMPARISON_DATA_FILE = 'bird_data/comparison_data.csv'
 
@@ -157,6 +158,8 @@ if __name__ == '__main__':
     # comparison_data = process_recordings.build_comparison_data(taxonomy_tree, species_vectors)
 
     comparison_data = visualize_tree.load_comparison_csv('bird_data/comparison_data.csv')
+    image_fallback.load_url() # Caches the bird image URLS
+    pygame.mixer.init(44100, -16, 2, 2048) # Sets up audio replay for tree visualization
 
     #draw_graph_of('Ninox connivens')
     #draw_full_graph()

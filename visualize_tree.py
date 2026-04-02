@@ -178,7 +178,7 @@ def calculate_tree_layout(tree: TaxonomyTree) -> tuple[dict, list, list]:
         subtrees = node.get_subtrees()
 
         if not subtrees:  # Leaf
-            spacing = round(len(leaves) % 2) # Spaces out the leaves vertically to prevent cramming
+            spacing = round(len(leaves) % 2)  # Spaces out the leaves vertically to prevent cramming
             positions[node_id] = (leaf_counter[0], depth + spacing)
             leaf_counter[0] += 1
             leaves.append(node_id)

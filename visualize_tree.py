@@ -268,7 +268,7 @@ def run_interactive_taxonomic_tree(tree: TaxonomyTree, data: list[dict]) -> None
     app.layout = html.Div([
         html.Header([
             DashIconify(icon="gis:tree", width=30, style={'marginRight': '10px'}),
-            html.H2("Taxonomic Tree of selected species",
+            html.H2("Taxonomic Tree of selected species of orders Passeriformes, Strigiformes, and Piciformes",
                     style={'display': 'inline', 'fontFamily': 'Courier New'}),
         ], style={'textAlign': 'center', 'padding': '20px', 'borderBottom': '1px solid #ccc'}),
 

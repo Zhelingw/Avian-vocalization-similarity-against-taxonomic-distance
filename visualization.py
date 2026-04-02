@@ -1,14 +1,21 @@
+"""
+CSC111 Project 2: Visualization using scatter plots
+
+This module defines functions used for generating the scatter plots.
+
+Copyright (c) 2026 Lucy Wang, Yiming Xu, Ted Song. All rights reserved.
+"""
+
+import csv
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-import csv
 
 
-def draw_scatter_static(data: list) -> None:
+def draw_scatter_static(data: list[dict]) -> None:
     """
     Create a static scatter plot from given data.
 
     Preconditions:
-    - all([type(comparison) == dict for comparison in data])
     - all([comparison["distance"] is not None for comparison in data])
     - all([comparison["similarity"] is not None for comparison in data])
     - all([comparison["item1"] is not None for comparison in data])
@@ -117,3 +124,13 @@ if __name__ == '__main__':
     }
 
     draw_scatter_interactive([example])
+    import doctest
+
+    doctest.testmod()
+
+    import python_ta
+
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['static_type_checker']
+    })

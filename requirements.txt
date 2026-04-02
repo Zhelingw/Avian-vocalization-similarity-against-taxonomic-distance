@@ -1,4 +1,4 @@
-# CSC111 project 2
+# CSC111 project 2 required libraries
 
 # Testing and code checking
 hypothesis
@@ -7,6 +7,7 @@ python-ta
 
 # Audio feature extraction
 librosa
+numpy
 
 # Graphics and data visualization
 matplotlib
@@ -17,7 +18,6 @@ dash-iconify
 pygame
 
 # Scientific computing
-numpy
 scipy
 
 # HTTP requests (Xeno-Canto API, Wikimedia API)

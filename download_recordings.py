@@ -1,9 +1,17 @@
-import os
-import requests
+"""
+CSC111 Project 2: recordings downloading file
+
+This files is used to download all the recording files used for analysis in the project.
+
+Copyright (c) 2026 Lucy Wang,  Ted Song, Yiming Xu. All rights reserved.
+"""
+
 import time
 import csv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
+import os
+import requests
 
 MAX_SPECIES_PER_FAMILY = 10
 MAX_RECORDINGS_PER_SPECIES = 10
@@ -145,4 +153,13 @@ def download_recordings_of(families: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    download_recordings_of(['paridae', 'fringillidae', 'phylloscopidae', 'picidae', 'strigidae'])
+    # download_recordings_of(['paridae', 'fringillidae', 'phylloscopidae', 'picidae', 'strigidae'])
+
+    import doctest
+    doctest.testmod()
+
+    import python_ta
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['static_type_checker']
+    })

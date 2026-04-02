@@ -133,11 +133,10 @@ class TaxonomyTree:
             genus: str,
             latin_name: str,
             common_name: str,
-            recording_data: RecordingData  # 改成单数 recording_data
+            recording_data: RecordingData
     ) -> None:
         """Add a new species. Support multiple Orders (Passeriformes, Strigiformes, Piciformes, etc.)"""
 
-        # 根据 family 判断所属 Order（可后续轻松扩展）
         if family.lower() in ['picidae']:
             order_name = 'Piciformes'
         elif family.lower() in ['strigidae']:

@@ -166,4 +166,4 @@ if __name__ == '__main__':
     # analyze_correlation()
 
     # print(comparison_data)
-    visualize_tree.run_interactive_taxonomic_tree(taxonomy_tree, comparison_data)
+    visualize_tree.run(taxonomy_tree, comparison_data)

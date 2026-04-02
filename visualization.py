@@ -3,12 +3,11 @@ import plotly.graph_objects as go
 import csv
 
 
-def draw_scatter_static(data: list) -> None:
+def draw_scatter_static(data: list[dict]) -> None:
     """
     Create a static scatter plot from given data.
 
     Preconditions:
-    - all([type(comparison) == dict for comparison in data])
     - all([comparison["distance"] is not None for comparison in data])
     - all([comparison["similarity"] is not None for comparison in data])
     - all([comparison["item1"] is not None for comparison in data])

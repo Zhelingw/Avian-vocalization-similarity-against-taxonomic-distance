@@ -1,3 +1,13 @@
+"""
+CSC111 Project 2: Tree Visualization Style
+
+This module stores the style settings for the tree visualizer.
+
+Usage:
+    from tree_style import STYLESHEET
+
+Copyright (c) 2026 Lucy Wang, Yiming Xu, Ted Song. All rights reserved.
+"""
 STYLESHEET = [
     {
         'selector': 'node',
@@ -44,3 +54,16 @@ STYLESHEET = [
         }
     }
 ]
+
+if __name__ == '__main__':
+    import python_ta
+    import doctest
+
+    python_ta.check_all(config={
+        'extra-imports': [
+        ],  # the names (strs) of imported modules
+        'allowed-io': [
+        ],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
+    doctest.testmod(verbose=True)

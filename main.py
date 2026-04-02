@@ -1,10 +1,18 @@
-from visualization import draw_scatter_interactive
-from collections import defaultdict
+"""
+CSC111 Project 2: main file
+
+The file ties together the analysis data to create the graphs described by the project report.
+
+Copyright (c) 2026 Lucy Wang,  Ted Song, Yiming Xu. All rights reserved.
+"""
+
 import csv
-import pygame
+from collections import defaultdict
 import statistics
 import matplotlib.pyplot as plt
 from scipy import stats
+import pygame
+from visualization import draw_scatter_interactive
 import process_recordings
 import visualize_tree
 import image_fallback
@@ -54,7 +62,7 @@ def analyze_distance_statistics() -> None:
 
         stats_list.append((dist, sims))
 
-    print("="*70)
+    print("=" * 70)
 
     # Draw the chart
     plt.figure(figsize=(10, 6))
@@ -71,7 +79,7 @@ def analyze_distance_statistics() -> None:
 
     # Add the mean points
     for i, sims in enumerate(plot_data):
-        plt.scatter(i+1, statistics.mean(sims), color='red', marker='o', s=50, label='Mean' if i == 0 else "")
+        plt.scatter(i + 1, statistics.mean(sims), color='red', marker='o', s=50, label='Mean' if i == 0 else "")
 
     plt.grid(True, alpha=0.3, axis='y')
     plt.legend()
@@ -130,21 +138,17 @@ def analyze_correlation() -> None:
         except (ValueError, TypeError, KeyError):
             continue
 
-    if len(distances) < 3:
-        print("no sufficient data")
-        return
-
     # Pearson correlation analysis
     r, p_value = stats.pearsonr(distances, similarities)
     r_squared = r ** 2
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("Taxonomic Distance vs Vocalization Similarity correlation analysis")
-    print("="*65)
+    print("=" * 65)
     print(f"Pearson r   : {r:.4f}")
-    print(f"R^2         : {r_squared:.4f}  ({r_squared*100:.2f}%)")
+    print(f"R^2         : {r_squared:.4f}  ({r_squared * 100:.2f}%)")
     print(f"p-value     : {p_value:.6f}")
-    print("="*70)
+    print("=" * 70)
 
 
 if __name__ == '__main__':
@@ -152,18 +156,22 @@ if __name__ == '__main__':
     process_recordings.write_taxonomy_csv(species_information, 'bird_data/bird_taxonomy.csv')
     taxonomy_tree = process_recordings.build_taxonomy_tree(species_information)
 
-    # species_paths = process_recordings.collect_recording_paths(process_recordings.API_DATA_FILE)
-    # species_vectors = process_recordings.extract_all_species_features(species_paths)
-    # comparison_data = process_recordings.build_comparison_data(taxonomy_tree, species_vectors)
-
-    comparison_data = visualize_tree.load_comparison_csv('bird_data/comparison_data.csv')
+    comparison_data_dict = visualize_tree.load_comparison_csv('bird_data/comparison_data.csv')
     image_fallback.load_url()  # Caches the bird image URLS
     pygame.mixer.init(44100, -16, 2, 2048)  # Sets up audio replay for tree visualization
 
-    # draw_graph_of('Ninox connivens')
-    # draw_full_graph()
-    # analyze_distance_statistics()
-    # analyze_correlation()
+    # Draw graph of comparison data of single species
+    draw_graph_of('Ninox connivens')
 
-    # print(comparison_data)
-    visualize_tree.run_interactive_taxonomic_tree(taxonomy_tree, comparison_data)
+    # Draw graph of all comparison data points
+    draw_full_graph()
+
+    # Draw Bar & Whisker Plot for whole dataset
+    analyze_distance_statistics()
+
+    # Analyse the statistical significance of the data
+    analyze_correlation()
+
+    # Create the interactive taxonomy tree
+    visualize_tree.run_interactive_taxonomic_tree(taxonomy_tree, comparison_data_dict)
+

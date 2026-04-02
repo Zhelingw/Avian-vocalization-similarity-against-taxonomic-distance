@@ -1,9 +1,18 @@
-# CSC111 project 2
+# CSC111 project 2 required libraries
 
-# Testing and code checking
-hypothesis
-pytest
-python-ta
+librosa
+pygame
+plotly
+requests
+csv
+dash
+dash_iconify
+dash_cytoscape
+matplotlib
+os
+statistics
+collections
+concurrent
+scipy
+math
 
-# Graphics and data visualization
-TODO

@@ -16,7 +16,7 @@ Usage:
     comparison_data = visualize_tree.load_comparison_csv('bird_data/comparison_data.csv')
     visualize_tree.run_interactive_taxonomic_tree(example_tree, comparison_data)
 
-Copyright (c) 2026 Lucy Wang, Yiming Xu, Ted Song. All rights reserved.
+Copyright (c) 2026 Lucy Wang, Ted Song, Yiming Xu. All rights reserved.
 """
 
 import csv

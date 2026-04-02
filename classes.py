@@ -1,10 +1,17 @@
+"""
+CSC111 Project 2: classes definition file
+
+The file defines the main classes of the project, including TaxonomyTree, Species, and RecordingData.
+
+Copyright (c) 2026 Lucy Wang,  Ted Song, Yiming Xu. All rights reserved.
+"""
 
 from __future__ import annotations
 from typing import Optional, Any
-import librosa
-import librosa.feature
 import math
 from statistics import mean
+import librosa
+import librosa.feature
 
 
 class TaxonomyTree:
@@ -99,7 +106,7 @@ class TaxonomyTree:
 
         >>> all_species = tree.get_all_species()
         >>> [species for species in all_species]
-        ['Parus_major', 'Parus_minor']
+        ['Parus_major', 'Parus_minor', 'Aegolius_acadicus']
         """
         if self._species is not None:
             return {self._root: self}
@@ -210,8 +217,8 @@ class TaxonomyTree:
             s1_tracer = s1_tracer._parent
         distance = 0
 
-        for i in range(len(s1_heritage)):
-            if s2_tracer._root == s1_heritage[i]:
+        for node in s1_heritage:
+            if s2_tracer._root == node:
                 return distance
             distance += 1
             s2_tracer = s2_tracer._parent
@@ -259,10 +266,10 @@ class RecordingData:
 
     """
 
-    recording_paths: list[str]
+    recording_files: list[str]
     features: Optional[dict[str, Any]] = None
 
-    def __init__(self, recording_files: list[str]):
+    def __init__(self, recording_files: list[str]) -> None:
         """
         Initialize the new RecordingData instance,
         with the file paths to analyse the features of the species' vocalization
@@ -308,7 +315,6 @@ class RecordingData:
 
     def _extract_feature(self, file_path: str) -> Optional[dict[str, Any]]:
         """Calculate features for a single recording. """
-        print(f"calculating{file_path}")
         y, sr = librosa.load(file_path, sr=None)
 
         y, _ = librosa.effects.trim(y, top_db=30)
@@ -351,69 +357,79 @@ class RecordingData:
         return vector
 
 
-# Taxonomy trees used for doc testing:
+if __name__ == '__main__':
+    # Taxonomy trees used for doc testing:
 
-Parus_major = TaxonomyTree(
-    rank='Species',
-    root='Parus_major',
-    subtrees=None,
-    parent=None,
-    species=Species('Parus_major', 'Great_Tit', RecordingData([]))
-)
+    Parus_major = TaxonomyTree(
+        rank='Species',
+        root='Parus_major',
+        subtrees=None,
+        parent=None,
+        species=Species('Parus_major', 'Great_Tit', RecordingData([]))
+    )
 
-Parus_minor = TaxonomyTree(
-    rank='Species',
-    root='Parus_minor',
-    subtrees=None,
-    parent=None,
-    species=Species('Parus_minor', 'Japanese_tit', RecordingData([]))
-)
+    Parus_minor = TaxonomyTree(
+        rank='Species',
+        root='Parus_minor',
+        subtrees=None,
+        parent=None,
+        species=Species('Parus_minor', 'Japanese_tit', RecordingData([]))
+    )
 
-Aegolius_acadicus = TaxonomyTree(
-    rank='Species',
-    root='Aegolius_acadicus',
-    subtrees=None,
-    parent=None,
-    species=Species('Aegolius_acadicus', 'Northern Saw-whet Owl', RecordingData([]))
-)
+    Aegolius_acadicus = TaxonomyTree(
+        rank='Species',
+        root='Aegolius_acadicus',
+        subtrees=None,
+        parent=None,
+        species=Species('Aegolius_acadicus', 'Northern Saw-whet Owl', RecordingData([]))
+    )
 
-tree = TaxonomyTree(
-    rank='Class',
-    root='Aves',
-    subtrees=[
-        TaxonomyTree(
-            rank='Order',
-            root='Passeriformes',
-            subtrees=[
-                TaxonomyTree(
-                    rank='Family',
-                    root='Paridae',
-                    subtrees=[
-                        TaxonomyTree(
-                            rank='Genus',
-                            root='Parus',
-                            subtrees=[Parus_major, Parus_minor]
-                        )
-                    ]
-                )
-            ]
-        ),
-        TaxonomyTree(
-            rank='Order',
-            root='Strigiformes',
-            subtrees=[
-                TaxonomyTree(
-                    rank='Family',
-                    root='Strigidae',
-                    subtrees=[
-                        TaxonomyTree(
-                            rank='Genus',
-                            root='Aegolius',
-                            subtrees=[Aegolius_acadicus]
-                        )
-                    ]
-                )
-            ]
-        )
-    ]
-)
+    tree = TaxonomyTree(
+        rank='Class',
+        root='Aves',
+        subtrees=[
+            TaxonomyTree(
+                rank='Order',
+                root='Passeriformes',
+                subtrees=[
+                    TaxonomyTree(
+                        rank='Family',
+                        root='Paridae',
+                        subtrees=[
+                            TaxonomyTree(
+                                rank='Genus',
+                                root='Parus',
+                                subtrees=[Parus_major, Parus_minor]
+                            )
+                        ]
+                    )
+                ]
+            ),
+            TaxonomyTree(
+                rank='Order',
+                root='Strigiformes',
+                subtrees=[
+                    TaxonomyTree(
+                        rank='Family',
+                        root='Strigidae',
+                        subtrees=[
+                            TaxonomyTree(
+                                rank='Genus',
+                                root='Aegolius',
+                                subtrees=[Aegolius_acadicus]
+                            )
+                        ]
+                    )
+                ]
+            )
+        ]
+    )
+
+    import doctest
+    doctest.testmod()
+
+    import python_ta
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['static_type_checker']
+    })

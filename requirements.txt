@@ -5,5 +5,20 @@ hypothesis
 pytest
 python-ta
 
+# Audio feature extraction
+librosa
+
 # Graphics and data visualization
-TODO
+matplotlib
+plotly
+dash
+dash-cytoscape
+dash-iconify
+pygame
+
+# Scientific computing
+numpy
+scipy
+
+# HTTP requests (Xeno-Canto API, Wikimedia API)
+requests

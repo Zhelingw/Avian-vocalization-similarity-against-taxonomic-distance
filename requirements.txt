@@ -1,5 +1,3 @@
-# CSC111 project 2 required libraries
-
 # Testing and code checking
 hypothesis
 pytest
